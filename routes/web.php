@@ -7,6 +7,14 @@ use App\Http\Controllers\CattleController;
 use App\Http\Controllers\VaccineController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Auth\SocialController;
+
+// Rutas de autenticación social
+Route::get('/auth/google', [SocialController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+Route::get('/auth/facebook', [SocialController::class, 'redirectToFacebook'])->name('auth.facebook');
+Route::get('/auth/facebook/callback', [SocialController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
 
 Route::get('/', fn () => redirect()->route('login'));
 
