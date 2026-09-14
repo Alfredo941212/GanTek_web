@@ -12,10 +12,14 @@
         <div class="brand">GanTek</div>
         <nav>
             <a href="{{ route('dashboard') }}">Inicio</a>
+            <a href="{{ route('fincas.index') }}">Fincas</a>
+            <a href="{{ route('lotes.index') }}">Lotes</a>
             <a href="{{ route('ganado.index') }}">Ganado</a>
-            <a href="{{ route('vacunas.index') }}">Vacunación</a>
-            <a href="{{ route('ventas.index') }}">Ventas</a>
-            <a href="{{ route('reportes.index') }}">Reportes</a>
+            <a href="{{ route('veterinarios.index') }}">Veterinarios</a>
+            <a href="{{ route('vacunas.index') }}">Catálogo de vacunas</a>
+            <a href="{{ route('vacunaciones.index') }}">Vacunaciones</a>
+            <a href="{{ route('ordenios.index') }}">Ordeños</a>
+            <a href="{{ route('produccion.index') }}">Producción y reportes</a>
         </nav>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
