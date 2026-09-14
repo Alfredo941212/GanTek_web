@@ -1,21 +1,17 @@
 @csrf
+@php($registro = $vacunacion ?? null)
 <div class="form-grid">
-    <div>
-        <label>Animal *</label>
-        <select name="cattle_id" required>
-            <option value="">Seleccione</option>
-            @foreach($cattle as $item)
-                <option value="{{ $item->id }}" @selected(old('cattle_id', $vacuna->cattle_id ?? '') == $item->id)>
-                    {{ $item->code }} {{ $item->name ? '- '.$item->name : '' }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <div><label>Vacuna *</label><input name="vaccine_name" value="{{ old('vaccine_name', $vacuna->vaccine_name ?? '') }}" required></div>
-    <div><label>Fecha de aplicación *</label><input type="date" name="application_date" value="{{ old('application_date', isset($vacuna) ? $vacuna->application_date?->format('Y-m-d') : '') }}" required></div>
-    <div><label>Próxima aplicación</label><input type="date" name="next_date" value="{{ old('next_date', isset($vacuna) ? $vacuna->next_date?->format('Y-m-d') : '') }}"></div>
-    <div class="full-row"><label>Notas</label><textarea name="notes" rows="4">{{ old('notes', $vacuna->notes ?? '') }}</textarea></div>
+@if(!$registro)
+@include('partials.field', ['name' => 'ganado_id', 'label' => 'Animal', 'type' => 'select', 'required' => true, 'value' => $registro?->ganado_id ?? '', 'options' => $animales->mapWithKeys(fn ($animal) => [$animal->id => $animal->arete_siniiga.' / '.$animal->nombre])])
+@else
+<p>Animal: {{ $registro->ganado->arete_siniiga }}</p>
+@endif
+@include('partials.field', ['name' => 'vacuna_id', 'label' => 'Vacuna', 'type' => 'select', 'required' => true, 'value' => $registro?->vacuna_id ?? '', 'options' => $vacunas->pluck('nombre', 'id')])
+@include('partials.field', ['name' => 'veterinario_id', 'label' => 'Veterinario responsable', 'type' => 'select', 'required' => true, 'value' => $registro?->veterinario_id ?? '', 'options' => $veterinarios->pluck('nombre', 'id')])
+@include('partials.field', ['name' => 'fecha_aplicacion', 'label' => 'Fecha de aplicación', 'type' => 'date', 'required' => true, 'value' => $registro?->fecha_aplicacion?->format('Y-m-d') ?? ''])
+@include('partials.field', ['name' => 'proxima_aplicacion', 'label' => 'Próxima aplicación', 'type' => 'date', 'required' => false, 'value' => $registro?->proxima_aplicacion?->format('Y-m-d') ?? ''])
+@include('partials.field', ['name' => 'dosis', 'label' => 'Dosis aplicada (incluye unidad)', 'type' => 'text', 'required' => true, 'value' => $registro?->dosis ?? ''])
+@include('partials.field', ['name' => 'observaciones', 'label' => 'Observaciones', 'type' => 'textarea', 'required' => false, 'value' => $registro?->observaciones ?? ''])
 </div>
-<button class="btn primary">Guardar</button>
-<a class="btn" href="{{ route('vacunas.index') }}">Cancelar</a>
+<button class="btn primary" type="submit">Guardar</button>
+<a class="btn" href="{{ route('vacunaciones.index') }}">Cancelar</a>

@@ -1,22 +1,32 @@
 @extends('layouts.app')
-@section('title', 'Detalle del animal | GanTek')
-@section('heading', 'Detalle del animal')
-
+@section('title', 'Historial del animal | GanTek')
+@section('heading', 'Historial del animal')
 @section('content')
 <div class="panel detail-grid">
-    <div><span>Código</span><strong>{{ $cattle->code }}</strong></div>
-    <div><span>Nombre</span><strong>{{ $cattle->name ?? '—' }}</strong></div>
-    <div><span>Sexo</span><strong>{{ $cattle->sex }}</strong></div>
-    <div><span>Raza</span><strong>{{ $cattle->breed ?? '—' }}</strong></div>
-    <div><span>Ingreso</span><strong>{{ $cattle->entry_date->format('d/m/Y') }}</strong></div>
-    <div><span>Peso</span><strong>{{ $cattle->initial_weight ?? '—' }} kg</strong></div>
-    <div><span>Lote</span><strong>{{ $cattle->lot ?? '—' }}</strong></div>
-    <div><span>Corral</span><strong>{{ $cattle->corral ?? '—' }}</strong></div>
-    <div><span>Estado</span><strong>{{ $cattle->status }}</strong></div>
+@foreach(['Arete' => $animal->arete_siniiga, 'Nombre' => $animal->nombre, 'Sexo' => $animal->sexo, 'Raza' => $animal->raza, 'Nacimiento' => $animal->fecha_nacimiento?->format('d/m/Y'), 'Ingreso' => $animal->fecha_ingreso->format('d/m/Y'), 'Peso inicial (kg)' => $animal->peso_inicial, 'Finca actual' => $animal->lote->finca->nombre, 'Lote actual' => $animal->lote->nombre, 'Estado' => $animal->estado] as $label => $value)
+    <div><span>{{ $label }}</span><strong>{{ $value ?? '—' }}</strong></div>
+@endforeach
 </div>
-
-<div class="panel">
-    <h2>Observaciones</h2>
-    <p>{{ $cattle->observations ?? 'Sin observaciones.' }}</p>
-</div>
+<div class="panel"><h2>Observaciones</h2><p>{{ $animal->observaciones ?? 'Sin observaciones.' }}</p></div>
+<section class="panel table-scroll">
+<h2>Vacunaciones</h2>
+<table><thead><tr><th>Vacuna</th><th>Veterinario</th><th>Aplicación</th><th>Próxima</th><th>Dosis</th></tr></thead><tbody>
+@forelse($vacunaciones as $registro)
+<tr><td>{{ $registro->vacuna->nombre }}</td><td>{{ $registro->veterinario->nombre }}</td><td>{{ $registro->fecha_aplicacion->format('d/m/Y') }}</td><td>{{ $registro->proxima_aplicacion?->format('d/m/Y') ?? '—' }}</td><td>{{ $registro->dosis }}</td></tr>
+@empty
+<tr><td colspan="5">Sin vacunaciones.</td></tr>
+@endforelse
+</tbody></table>{{ $vacunaciones->links() }}
+</section>
+<section class="panel table-scroll">
+<h2>Ordeños</h2>
+<table><thead><tr><th>Fecha</th><th>Turno</th><th>Litros</th><th>Finca / lote histórico</th></tr></thead><tbody>
+@forelse($ordenios as $registro)
+<tr><td>{{ $registro->fecha->format('d/m/Y') }}</td><td>{{ $registro->turno }}</td><td>{{ $registro->litros }}</td><td>{{ $registro->loteHistorico->finca->nombre }} / {{ $registro->loteHistorico->nombre }}</td></tr>
+@empty
+<tr><td colspan="4">Sin ordeños.</td></tr>
+@endforelse
+</tbody></table>{{ $ordenios->links() }}
+</section>
+<a class="btn" href="{{ route('ganado.index') }}">Volver</a>
 @endsection

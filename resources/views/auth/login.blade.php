@@ -19,6 +19,14 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                    @foreach($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
             <form action="{{ route('login.process') }}" method="POST">
                 @csrf
                 <div class="mb-4">

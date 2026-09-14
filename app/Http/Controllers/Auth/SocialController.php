@@ -4,68 +4,62 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialController extends Controller
 {
-    // Redirigir a Google
-    public function redirectToGoogle()
+    public function redirectToGoogle(): RedirectResponse
     {
         return Socialite::driver('google')->redirect();
     }
 
-    // Callback de Google
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(): RedirectResponse
     {
-        try {
-            $socialUser = Socialite::driver('google')->user();
-            
-            $user = User::updateOrCreate(
-                ['email' => $socialUser->getEmail()],
-                [
-                    'name' => $socialUser->getName(),
-                    'google_id' => $socialUser->getId(),
-                    'password' => bcrypt(\Illuminate\Support\Str::random(32)),
-                    'email_verified_at' => now(),
-                ]
-            );
-            
-            auth()->login($user);
-            return redirect()->route('dashboard');
-            
-        } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Error al iniciar sesión con Google');
-        }
+        return $this->callback('google');
     }
 
-    // Redirigir a Facebook
-    public function redirectToFacebook()
+    public function redirectToFacebook(): RedirectResponse
     {
         return Socialite::driver('facebook')->redirect();
     }
 
-    // Callback de Facebook
-    public function handleFacebookCallback()
+    public function handleFacebookCallback(): RedirectResponse
+    {
+        return $this->callback('facebook');
+    }
+
+    private function callback(string $provider): RedirectResponse
     {
         try {
-            $socialUser = Socialite::driver('facebook')->user();
-            
-            $user = User::updateOrCreate(
-                ['email' => $socialUser->getEmail()],
-                [
-                    'name' => $socialUser->getName(),
-                    'facebook_id' => $socialUser->getId(),
-                    'password' => bcrypt(\Illuminate\Support\Str::random(32)),
-                    'email_verified_at' => now(),
-                ]
-            );
-            
-            auth()->login($user);
+            $socialUser = Socialite::driver($provider)->user();
+            $email = $socialUser->getEmail();
+            if (! is_string($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return redirect()->route('login')->with('error', 'El proveedor no devolvió un correo válido.');
+            }
+            $column = $provider.'_id';
+            $user = User::where($column, $socialUser->getId())->first()
+                ?? User::firstOrNew(['email' => $email]);
+            if ($user->exists && $user->{$column} && $user->{$column} !== $socialUser->getId()) {
+                return redirect()->route('login')->with('error', 'La cuenta social no coincide con la cuenta registrada.');
+            }
+            if (! $user->exists) {
+                $user->name = $socialUser->getName() ?: $email;
+                $user->password = Str::random(64);
+            }
+            $user->{$column} = $socialUser->getId();
+            $user->avatar = $socialUser->getAvatar();
+            $user->save();
+            Auth::login($user);
+            request()->session()->regenerate();
+
             return redirect()->route('dashboard');
-            
-        } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Error al iniciar sesión con Facebook');
+        } catch (\Exception $exception) {
+            report($exception);
+
+            return redirect()->route('login')->with('error', 'No fue posible iniciar sesión con el proveedor.');
         }
     }
 }
