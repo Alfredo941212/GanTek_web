@@ -130,42 +130,48 @@
 
         <section class="panel">
 
-            <h2> Disminución de producción</h2>
+            <h2>⚠️ Baja producción individual</h2>
 
-            <p>
-                Últimos 3 días completos frente a los 7 anteriores.
-                Se requieren ambos turnos cada día.
-            </p>
+<p>
+    Se muestra una alerta cuando la producción total de ayer
+    está por debajo del mínimo diario establecido para la vaca.
+</p>
 
-            @forelse($alertasProduccion as $alerta)
+@forelse($alertasProduccion as $alerta)
 
-                <div class="alert error">
+    <div class="alert error">
 
-                    <a href="{{ route('ganado.show', $alerta->id) }}">
-                        {{ $alerta->arete_siniiga }}
-                    </a>
+        <a href="{{ route('ganado.show', $alerta->id) }}">
+            {{ $alerta->arete_siniiga }}
+        </a>
 
-                    :
+        @if ($alerta->nombre)
+            — {{ $alerta->nombre }}
+        @endif
 
-                    {{ number_format($alerta->reciente, 2) }} L/día
+        <br>
 
-                    frente a
+        Producción de ayer:
+        <strong>{{ number_format($alerta->produccion, 2) }} L</strong>
 
-                    {{ number_format($alerta->referencia, 2) }} L/día.
+        <br>
 
-                    <strong>
-                        Revisa el estado del animal.
-                    </strong>
+        Mínimo diario:
+        <strong>{{ number_format($alerta->produccion_minima_diaria, 2) }} L</strong>
 
-                </div>
+        <br>
 
-            @empty
+        <strong>Revisa el estado del animal.</strong>
 
-                <div class="dashboard-message">
-                    ℹ️ No hay alertas con los registros suficientes disponibles.
-                </div>
+    </div>
 
-            @endforelse
+@empty
+
+    <div class="dashboard-message">
+        ℹ️ No hay alertas de baja producción individual.
+    </div>
+
+@endforelse
 
         </section>
 
