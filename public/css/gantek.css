@@ -23,3 +23,568 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cfd8d1;bord
 .login-page{min-height:100vh;display:grid;place-items:center;background:#eef4ef}.login-card{width:min(420px,92vw);background:white;padding:32px;border-radius:16px;border:1px solid #dde5de;box-shadow:0 12px 30px rgba(0,0,0,.08)}
 .login-logo{font-size:34px;font-weight:800;color:#1f6b49}.login-card h1{margin-bottom:6px}.login-card p{color:#6b7280;margin-top:0;margin-bottom:22px}.login-card input{margin-bottom:14px}.remember{display:flex;align-items:center;gap:8px;font-weight:400;margin:4px 0 18px}.remember input{width:auto;margin:0}
 @media(max-width:900px){.app-shell{grid-template-columns:1fr}.sidebar{position:static}.two-columns,.form-grid{grid-template-columns:1fr}.full-row{grid-column:auto}.content{padding:18px}}
+
+
+/* =========================================
+   DASHBOARD GANTEK - NUEVO DISEÑO
+========================================= */
+
+.dashboard-page{
+    min-height:100vh;
+    padding:30px;
+
+    background:
+        linear-gradient(
+            rgba(10,45,30,.22),
+            rgba(10,45,30,.38)
+        ),
+        url('/images/ganado-fondo.jpg');
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+
+    border-radius:18px;
+}
+
+
+/* BIENVENIDA */
+
+.dashboard-hero{
+    min-height:120px;
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.dashboard-welcome h1{
+    margin:0;
+    color:white;
+    font-size:38px;
+    font-weight:800;
+    text-shadow:0 3px 10px rgba(0,0,0,.45);
+}
+
+.dashboard-welcome p{
+    margin:6px 0 0;
+    color:#f1f5f3;
+    font-size:17px;
+    text-shadow:0 2px 5px rgba(0,0,0,.45);
+}
+
+
+/* TARJETAS SUPERIORES */
+
+.dashboard-page .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(6,minmax(140px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.dashboard-page .stat-card{
+    background:rgba(255,255,255,.92);
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,.55);
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.15);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.dashboard-page .stat-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 28px rgba(0,0,0,.20);
+}
+
+.dashboard-page .stat-card span{
+    display:block;
+    color:#516159;
+    font-size:14px;
+    margin-bottom:7px;
+}
+
+.dashboard-page .stat-card strong{
+    display:block;
+    color:#0e5638;
+    font-size:27px;
+    margin:0 0 8px;
+}
+
+.dashboard-page .stat-card small{
+    display:inline-block;
+
+    color:#17663f;
+    background:#dff3e7;
+
+    padding:4px 9px;
+
+    border-radius:8px;
+
+    font-size:12px;
+}
+
+
+/* BOTONES */
+
+.dashboard-page .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.dashboard-page .btn{
+    background:rgba(255,255,255,.95);
+
+    border:1px solid rgba(255,255,255,.8);
+
+    color:#164f35;
+
+    font-weight:600;
+
+    border-radius:10px;
+
+    padding:11px 18px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.10);
+
+    transition:.2s;
+}
+
+.dashboard-page .btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 7px 16px rgba(0,0,0,.16);
+}
+
+.dashboard-page .btn.primary{
+    background:linear-gradient(
+        135deg,
+        #1b8c57,
+        #12633e
+    );
+
+    color:white;
+    border:none;
+}
+
+
+/* PANELES GRANDES */
+
+.dashboard-page .two-columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.dashboard-page .panel{
+    background:rgba(255,255,255,.93);
+
+    backdrop-filter:blur(13px);
+    -webkit-backdrop-filter:blur(13px);
+
+    border:1px solid rgba(255,255,255,.55);
+
+    border-radius:18px;
+
+    padding:24px;
+
+    margin-bottom:0;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+
+.dashboard-page .panel h2{
+    color:#153d2b;
+
+    font-size:23px;
+
+    margin-top:0;
+    margin-bottom:16px;
+}
+
+.dashboard-page .panel p{
+    color:#48554f;
+    line-height:1.6;
+}
+
+
+/* TABLAS */
+
+.dashboard-page table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.dashboard-page th{
+    color:#365d49;
+    font-weight:700;
+}
+
+.dashboard-page th,
+.dashboard-page td{
+    padding:12px 10px;
+    border-bottom:1px solid #dde7e0;
+}
+
+.dashboard-page td{
+    color:#45534c;
+}
+
+.dashboard-page td a{
+    color:#177046;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.dashboard-page td a:hover{
+    text-decoration:underline;
+}
+
+
+/* MENSAJE DE INFORMACIÓN */
+
+.dashboard-message{
+    margin-top:16px;
+
+    padding:14px;
+
+    background:rgba(226,242,255,.95);
+
+    border:1px solid #add7fa;
+
+    border-radius:10px;
+
+    color:#275c7d;
+}
+
+
+/* FRASE INFERIOR */
+
+.dashboard-footer{
+    margin-top:25px;
+
+    color:white;
+
+    font-size:17px;
+    font-style:italic;
+
+    text-shadow:0 2px 7px rgba(0,0,0,.55);
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:1400px){
+
+    .dashboard-page .stats-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:900px){
+
+    .dashboard-page{
+        padding:18px;
+    }
+
+    .dashboard-page .stats-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-page .two-columns{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:600px){
+
+    .dashboard-page .stats-grid{
+        grid-template-columns:1fr;
+    }
+
+    .dashboard-page .toolbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+}
+
+/* =========================================
+   DISEÑO GENERAL DE TODAS LAS VISTAS
+========================================= */
+
+.app-background{
+    min-height:100vh;
+
+    background:
+        linear-gradient(
+            rgba(12,45,32,.30),
+            rgba(12,45,32,.42)
+        ),
+        url('/images/ganado-fondo.jpg');
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+}
+
+
+/* Encabezado general */
+
+.modern-topbar{
+    background:rgba(255,255,255,.88);
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,.55);
+
+    border-radius:16px;
+
+    padding:18px 22px;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+
+    margin-bottom:22px;
+}
+
+
+.modern-topbar h1{
+    color:#153d2b;
+
+    font-size:30px;
+
+    margin:0 0 5px;
+}
+
+
+.modern-topbar p{
+    color:#64736b;
+
+    margin:0;
+}
+
+
+/* Usuario */
+
+.user-chip{
+    background:rgba(255,255,255,.95);
+
+    padding:10px 15px;
+
+    border-radius:999px;
+
+    border:1px solid rgba(21,61,43,.15);
+
+    color:#153d2b;
+
+    font-weight:600;
+
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+
+/* Paneles generales */
+
+.app-background .panel{
+    background:rgba(255,255,255,.93);
+
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,.55);
+
+    border-radius:18px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.14);
+
+    padding:22px;
+}
+
+
+/* Hover para paneles */
+
+.app-background .panel{
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.app-background .panel:hover{
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 28px rgba(0,0,0,.18);
+}
+
+
+/* Tablas */
+
+.app-background table{
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+
+.app-background th{
+    color:#214d38;
+
+    font-weight:700;
+
+    background:rgba(225,242,232,.50);
+}
+
+
+.app-background th,
+.app-background td{
+    padding:13px 12px;
+
+    border-bottom:1px solid rgba(42,90,65,.12);
+}
+
+
+.app-background tbody tr{
+    transition:background .2s ease;
+}
+
+
+.app-background tbody tr:hover{
+    background:rgba(31,107,73,.06);
+}
+
+
+/* Botones principales */
+
+.app-background .btn.primary{
+    background:
+        linear-gradient(
+            135deg,
+            #23865a,
+            #145c3b
+        );
+
+    color:white;
+
+    border:none;
+
+    font-weight:600;
+
+    box-shadow:
+        0 5px 14px rgba(20,92,59,.28);
+
+    transition:.2s ease;
+}
+
+
+.app-background .btn.primary:hover{
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 8px 18px rgba(20,92,59,.36);
+}
+
+
+/* Botones normales */
+
+.app-background .btn{
+    border-radius:10px;
+
+    padding:10px 16px;
+}
+
+
+/* Inputs */
+
+.app-background input,
+.app-background select,
+.app-background textarea{
+    background:rgba(255,255,255,.95);
+
+    border:1px solid rgba(31,107,73,.25);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.app-background input:focus,
+.app-background select:focus,
+.app-background textarea:focus{
+    outline:none;
+
+    border-color:#1f6b49;
+
+    box-shadow:
+        0 0 0 3px rgba(31,107,73,.12);
+}
+
+
+/* Sidebar */
+
+.sidebar{
+    background:
+        linear-gradient(
+            180deg,
+            #113e2b,
+            #0c3021
+        );
+
+    box-shadow:
+        5px 0 20px rgba(0,0,0,.18);
+}
+
+
+.brand{
+    font-size:31px;
+
+    font-weight:800;
+
+    letter-spacing:.4px;
+}
+
+
+.sidebar a{
+    transition:
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+.sidebar a:hover{
+    background:rgba(255,255,255,.11);
+
+    transform:translateX(3px);
+}
+
+
+/* Cerrar sesión */
+
+.logout-btn{
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.12);
+
+    transition:.2s ease;
+}
+
+
+.logout-btn:hover{
+    transform:translateY(-2px);
+
+    background:#e9f5ee;
+}
