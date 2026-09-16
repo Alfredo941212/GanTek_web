@@ -18,7 +18,20 @@ class Ganado extends Model
     protected $table = 'ganado';
 
     /** @var list<string> */
-    protected $fillable = ['lote_id', 'arete_siniiga', 'nombre', 'sexo', 'raza', 'fecha_nacimiento', 'fecha_ingreso', 'peso_inicial', 'estado', 'observaciones'];
+    protected $fillable = [
+        'lote_id',
+        'arete_siniiga',
+        'nombre',
+        'sexo',
+        'raza',
+        'fecha_nacimiento',
+        'fecha_ingreso',
+        'peso_inicial',
+        'estado_productivo',
+        'produccion_minima_diaria',
+        'estado',
+        'observaciones',
+    ];
 
     public function setFechaNacimientoAttribute(\DateTimeInterface|string|null $value): void
     {
@@ -33,7 +46,7 @@ class Ganado extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['fecha_nacimiento' => 'date', 'fecha_ingreso' => 'date', 'peso_inicial' => 'decimal:2'];
+        return ['fecha_nacimiento' => 'date', 'fecha_ingreso' => 'date', 'peso_inicial' => 'decimal:2','produccion_minima_diaria' => 'decimal:2'];
     }
 
     /** @param Builder<Ganado> $query
@@ -41,7 +54,7 @@ class Ganado extends Model
      */
     public function scopeForUser(Builder $query, User $user): Builder
     {
-        return $query->whereHas('lote', fn (Builder $lotes) => $lotes->forUser($user));
+        return $query->whereHas('lote', fn(Builder $lotes) => $lotes->forUser($user));
     }
 
     public function lote(): BelongsTo

@@ -18,7 +18,7 @@ class RegistroOrdenioController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('ordenios.index', ['ordenios' => RegistroOrdenio::forUser($request->user())->with(['ganado', 'loteHistorico.finca'])->latest('fecha')->orderBy('turno')->paginate(20)]);
+        return view('ordenios.index', ['ordenios' => RegistroOrdenio::forUser($request->user())->with(['ganado', 'loteHistorico.finca'])->latest('fecha')->orderBy('numero_ordenio')->paginate(20)]);
     }
 
     public function create(Request $request): View
@@ -47,7 +47,7 @@ class RegistroOrdenioController extends Controller
                 $animal->registrosOrdenio()->create($data);
             });
         } catch (UniqueConstraintViolationException $exception) {
-            throw ValidationException::withMessages(['turno' => 'Ya existe un ordeño de este animal para la fecha y turno indicados.']);
+            throw ValidationException::withMessages(['numero_ordenio' => 'Ya existe un ordeño de este animal para la fecha y turno indicados.']);
         }
 
         return redirect()->route('ordenios.index')->with('success', 'Ordeño registrado.');

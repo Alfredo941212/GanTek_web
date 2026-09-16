@@ -17,7 +17,7 @@ class RegistroOrdenio extends Model
     protected $table = 'registros_ordenio';
 
     /** @var list<string> */
-    protected $fillable = ['ganado_id', 'lote_historico_id', 'fecha', 'turno', 'litros', 'observaciones'];
+    protected $fillable = ['ganado_id', 'lote_historico_id', 'fecha','numero_ordenio', 'turno', 'litros', 'observaciones'];
 
     public function setFechaAttribute(\DateTimeInterface|string|null $value): void
     {
@@ -27,7 +27,7 @@ class RegistroOrdenio extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['fecha' => 'date', 'litros' => 'decimal:2'];
+        return ['fecha' => 'date','numero_ordenio' => 'integer', 'litros' => 'decimal:2'];
     }
 
     /** @param Builder<RegistroOrdenio> $query

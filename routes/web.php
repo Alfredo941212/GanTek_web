@@ -13,15 +13,34 @@ use App\Http\Controllers\VacunaController;
 use App\Http\Controllers\VeterinarioController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => redirect()->route('login'));
+Route::get('/', fn() => redirect()->route('login'));
 
 Route::middleware('guest')->group(function (): void {
+    Route::get('/registro', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/registro', [AuthController::class, 'register'])
+        ->middleware('throttle:5,1')
+        ->name('register.process');
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login.process');
     Route::get('/auth/google', [SocialController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [SocialController::class, 'handleGoogleCallback'])->name('auth.google.callback');
     Route::get('/auth/facebook', [SocialController::class, 'redirectToFacebook'])->name('auth.facebook');
     Route::get('/auth/facebook/callback', [SocialController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
+    Route::get('/olvide-contrasena', [AuthController::class, 'showForgotPassword'])
+        ->name('password.request');
+
+    Route::post('/olvide-contrasena', [AuthController::class, 'sendResetLink'])
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+
+    Route::get('/restablecer-contrasena/{token}', [AuthController::class, 'showResetPassword'])
+        ->name('password.reset');
+
+    Route::post('/restablecer-contrasena', [AuthController::class, 'resetPassword'])
+        ->middleware('throttle:5,1')
+        ->name('password.update');
 });
 
 Route::middleware('auth')->group(function (): void {

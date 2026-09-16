@@ -18,7 +18,9 @@ class GanadoController extends Controller
     public function index(Request $request): View
     {
         $request->validate(['search' => ['nullable', 'string', 'max:150']]);
-        $query = Ganado::forUser($request->user())->with('lote.finca');
+        $query = Ganado::forUser($request->user())
+            ->where('estado', 'Activo')
+            ->with('lote.finca');
         if ($request->filled('search')) {
             $search = '%'.$request->string('search').'%';
             $query->where(fn (Builder $query) => $query->where('arete_siniiga', 'like', $search)->orWhere('nombre', 'like', $search)->orWhere('raza', 'like', $search));
@@ -66,8 +68,10 @@ class GanadoController extends Controller
             if ($request->input('sexo') !== 'Hembra' && $animal->registrosOrdenio()->exists()) {
                 throw ValidationException::withMessages(['sexo' => 'Un animal con ordeños registrados debe conservar el sexo Hembra.']);
             }
-            if ($animal->registrosOrdenio()->where('fecha', '<', $request->input('fecha_ingreso'))->exists()
-                || $animal->vacunaciones()->where('fecha_aplicacion', '<', $request->input('fecha_ingreso'))->exists()) {
+            if (
+                $animal->registrosOrdenio()->where('fecha', '<', $request->input('fecha_ingreso'))->exists()
+                || $animal->vacunaciones()->where('fecha_aplicacion', '<', $request->input('fecha_ingreso'))->exists()
+            ) {
                 throw ValidationException::withMessages(['fecha_ingreso' => 'La fecha de ingreso no puede ser posterior a su historial.']);
             }
             $animal->update($request->validated());

@@ -14,6 +14,20 @@ class GanadoFactory extends Factory
     /** @return array<string, mixed> */
     public function definition(): array
     {
-        return ['lote_id' => Lote::factory(), 'arete_siniiga' => 'DEMO-'.fake()->unique()->numerify('##########'), 'nombre' => fake()->firstName(), 'sexo' => 'Hembra', 'raza' => 'Mestiza', 'fecha_nacimiento' => today()->subYears(3), 'fecha_ingreso' => today()->subYear(), 'peso_inicial' => '350.00', 'estado' => 'Activo'];
+        return [
+            'lote_id' => Lote::factory(),
+            'arete_siniiga' => 'DEMO-'.fake()->unique()->numerify('##########'),
+            'nombre' => fake()->firstName(),
+            'sexo' => 'Hembra',
+            'raza' => 'Mestiza',
+            'fecha_nacimiento' => today()->subYears(3),
+            'fecha_ingreso' => today()->subYear(),
+            'peso_inicial' => '350.00',
+
+            'estado_productivo' => 'En producción',
+            'produccion_minima_diaria' => '4.00',
+
+            'estado' => 'Activo',
+        ];
     }
 }

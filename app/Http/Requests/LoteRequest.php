@@ -26,6 +26,13 @@ class LoteRequest extends FormRequest
             'finca_id' => $lote ? ['missing'] : ['required', 'integer', Rule::exists('fincas', 'id')->where('user_id', $this->user()->id)],
             'nombre' => ['required', 'string', 'max:150', Rule::unique('lotes', 'nombre')->where('finca_id', $lote?->finca_id ?? $this->input('finca_id'))->ignore($lote)],
             'descripcion' => ['nullable', 'string', 'max:2000'],
+            'produccion_minima_por_vaca' => [
+                'required',
+                'numeric',
+                'gt:0',
+                'max:999999.99',
+                'decimal:0,2',
+            ],
             'estado' => ['required', Rule::in(['Activo', 'Inactivo'])],
         ];
     }

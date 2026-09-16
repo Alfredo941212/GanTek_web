@@ -12,67 +12,120 @@ use App\Services\AlertaService;
 use App\Services\ProduccionService;
 use Carbon\Carbon;
 use Database\Seeders\DatabaseSeeder;
-use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ProduccionAlertasTest extends TestCase
 {
-    #[DataProvider('productionThresholds')]
-    public function test_production_alert_has_an_inclusive_twenty_percent_threshold(float $recent, bool $expected): void
+    public function test_cow_generates_alert_when_yesterday_production_is_below_its_minimum(): void
     {
-        $animal = Ganado::factory()->create();
-        $this->history($animal, $recent);
-        $alerts = app(AlertaService::class)->produccion($animal->lote->finca->user);
-        $this->assertCount($expected ? 1 : 0, $alerts);
-        if ($expected) {
-            $this->assertEquals(10, $alerts->first()->referencia);
-            $this->assertEquals($recent, $alerts->first()->reciente);
+        $animal = Ganado::factory()->create([
+            'produccion_minima_diaria' => 4.00,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => 'Mañana',
+            'litros' => 1.5,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 2,
+            'turno' => 'Tarde',
+            'litros' => 2.0,
+        ]);
+
+        $alerts = app(AlertaService::class)
+            ->produccion($animal->lote->finca->user);
+
+        $this->assertCount(1, $alerts);
+        $this->assertEquals(3.5, $alerts->first()->produccion);
+        $this->assertEquals(4.0, $alerts->first()->produccion_minima_diaria);
+    }
+
+    public function test_cow_does_not_generate_alert_when_reaching_its_minimum(): void
+    {
+        $animal = Ganado::factory()->create([
+            'produccion_minima_diaria' => 4.00,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 1.5,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 2,
+            'turno' => null,
+            'litros' => 2.5,
+        ]);
+
+        $alerts = app(AlertaService::class)
+            ->produccion($animal->lote->finca->user);
+
+        $this->assertCount(0, $alerts);
+    }
+
+    public function test_alert_uses_all_milkings_and_excludes_today(): void
+    {
+        $animal = Ganado::factory()->create([
+            'produccion_minima_diaria' => 4.00,
+        ]);
+
+        foreach ([1 => 1.0, 2 => 1.0, 3 => 1.0] as $numero => $litros) {
+            RegistroOrdenio::factory()->create([
+                'ganado_id' => $animal->id,
+                'fecha' => today()->subDay(),
+                'numero_ordenio' => $numero,
+                'turno' => null,
+                'litros' => $litros,
+            ]);
         }
+
+        // La producción de hoy no debe modificar la alerta de ayer.
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 100,
+        ]);
+
+        $alerts = app(AlertaService::class)
+            ->produccion($animal->lote->finca->user);
+
+        $this->assertCount(1, $alerts);
+        $this->assertEquals(3.0, $alerts->first()->produccion);
     }
 
-    /** @return array<string, array{float, bool}> */
-    public static function productionThresholds(): array
-    {
-        return ['exactly 20 percent' => [8.0, true], 'less than 20 percent' => [8.02, false], '30 percent' => [7.0, true], 'stable' => [10.0, false]];
-    }
-
-    public function test_missing_shifts_suppress_alerts_and_today_is_excluded(): void
-    {
-        $animal = Ganado::factory()->create();
-        $this->history($animal, 7);
-        RegistroOrdenio::factory()->create(['ganado_id' => $animal->id, 'fecha' => today(), 'litros' => 1000]);
-        $service = app(AlertaService::class);
-        $user = $animal->lote->finca->user;
-        $this->assertCount(1, $service->produccion($user));
-        $animal->registrosOrdenio()->where('fecha', today()->subDays(5)->toDateString())->where('turno', 'Tarde')->delete();
-        $this->assertCount(0, $service->produccion($user));
-    }
-
-    public function test_alerts_exclude_other_owners_and_inactive_animals(): void
-    {
-        $animal = Ganado::factory()->create();
-        $this->history($animal, 7);
-        $service = app(AlertaService::class);
-        $this->assertCount(0, $service->produccion(User::factory()->create()));
-        $animal->update(['estado' => 'Baja']);
-        $this->assertCount(0, $service->produccion($animal->lote->finca->user));
-    }
 
     public function test_only_latest_application_per_animal_and_vaccine_generates_reminders(): void
     {
         $old = Vacunacion::factory()->create(['fecha_aplicacion' => today()->subDays(50), 'proxima_aplicacion' => today()->subDay()]);
         $user = $old->ganado->lote->finca->user;
         $latest = Vacunacion::factory()->create([
-            'ganado_id' => $old->ganado_id, 'vacuna_id' => $old->vacuna_id,
-            'fecha_aplicacion' => today()->subDays(10), 'proxima_aplicacion' => today()->addDays(5),
+            'ganado_id' => $old->ganado_id,
+            'vacuna_id' => $old->vacuna_id,
+            'fecha_aplicacion' => today()->subDays(10),
+            'proxima_aplicacion' => today()->addDays(5),
         ]);
         $service = app(AlertaService::class);
         $this->assertSame([$latest->id], $service->proximas($user)->pluck('id')->all());
         $this->assertSame(0, $service->vencidas($user)->count());
         $this->assertSame(0, $service->proximas(User::factory()->create())->count());
         $tie = Vacunacion::factory()->create([
-            'ganado_id' => $old->ganado_id, 'vacuna_id' => $old->vacuna_id,
-            'fecha_aplicacion' => $latest->fecha_aplicacion, 'proxima_aplicacion' => null,
+            'ganado_id' => $old->ganado_id,
+            'vacuna_id' => $old->vacuna_id,
+            'fecha_aplicacion' => $latest->fecha_aplicacion,
+            'proxima_aplicacion' => null,
         ]);
         $this->assertSame(0, $service->proximas($user)->count());
         $this->assertSame(0, $service->vencidas($user)->count());
@@ -96,14 +149,19 @@ class ProduccionAlertasTest extends TestCase
         $oldLot = $animal->lote;
         $newFarm = Finca::factory()->create(['user_id' => $user->id]);
         $newLot = Lote::factory()->create(['finca_id' => $newFarm->id]);
-        RegistroOrdenio::factory()->create(['ganado_id' => $animal->id, 'fecha' => today()->subDay(), 'litros' => 5.2]);
-        RegistroOrdenio::factory()->create(['ganado_id' => $animal->id, 'fecha' => today()->subDay(), 'turno' => 'Tarde', 'litros' => 4.1]);
+        RegistroOrdenio::factory()->create(['ganado_id' => $animal->id, 'fecha' => today()->subDay(), 'numero_ordenio' => 1, 'turno' => 'Mañana',  'litros' => 5.2]);
+        RegistroOrdenio::factory()->create(['ganado_id' => $animal->id, 'fecha' => today()->subDay(), 'numero_ordenio' => 2, 'turno' => 'Tarde', 'litros' => 4.1]);
 
         $this->actingAs($user)->put(route('ganado.update', $animal), [
-            'lote_id' => $newLot->id, 'arete_siniiga' => $animal->arete_siniiga, 'sexo' => 'Hembra',
-            'fecha_ingreso' => $animal->fecha_ingreso->toDateString(), 'estado' => 'Activo',
+            'lote_id' => $newLot->id,
+            'arete_siniiga' => $animal->arete_siniiga,
+            'sexo' => 'Hembra',
+            'fecha_ingreso' => $animal->fecha_ingreso->toDateString(),
+            'estado_productivo' => 'En producción',
+            'produccion_minima_diaria' => 4.00,
+            'estado' => 'Activo',
         ])->assertRedirect();
-        $this->post(route('ordenios.store'), ['ganado_id' => $animal->id, 'fecha' => today()->toDateString(), 'turno' => 'Mañana', 'litros' => 6])->assertRedirect();
+        $this->post(route('ordenios.store'), ['ganado_id' => $animal->id, 'fecha' => today()->toDateString(), 'numero_ordenio' => 1, 'turno' => 'Mañana', 'litros' => 6])->assertRedirect();
         $service = app(ProduccionService::class);
         $this->assertEquals(9.3, $service->resumen($user, ['lote_id' => $oldLot->id])['total']);
         $this->assertEquals(9.3, $service->resumen($user, ['finca_id' => $oldLot->finca_id])['total']);
@@ -124,10 +182,10 @@ class ProduccionAlertasTest extends TestCase
         }
         foreach (['diario' => 5, 'semanal' => 15, 'mensual' => 35] as $periodo => $total) {
             $this->get(route('produccion.index', ['periodo' => $periodo]))->assertOk()
-                ->assertViewHas('resumen', fn (array $data): bool => $data['total'] === (float) $total);
+                ->assertViewHas('resumen', fn(array $data): bool => $data['total'] === (float) $total);
         }
         $this->get(route('produccion.index', ['periodo' => 'personalizado', 'desde' => '2026-08-01', 'hasta' => '2026-08-02']))
-            ->assertOk()->assertViewHas('resumen', fn (array $data): bool => $data['total'] === 0.0 && $data['promedio'] === 0.0);
+            ->assertOk()->assertViewHas('resumen', fn(array $data): bool => $data['total'] === 0.0 && $data['promedio'] === 0.0);
     }
 
     public function test_seeders_provide_the_approved_dataset_and_demonstrable_alerts(): void
@@ -144,15 +202,142 @@ class ProduccionAlertasTest extends TestCase
         $this->assertGreaterThan(0, app(AlertaService::class)->vencidas($user)->count());
     }
 
-    private function history(Ganado $animal, float $recent): void
+    public function test_alerts_exclude_other_owners_and_inactive_animals(): void
     {
-        for ($day = 10; $day >= 1; $day--) {
-            foreach (['Mañana', 'Tarde'] as $shift) {
-                RegistroOrdenio::factory()->create([
-                    'ganado_id' => $animal->id, 'fecha' => today()->subDays($day), 'turno' => $shift,
-                    'litros' => ($day <= 3 ? $recent : 10) / 2,
-                ]);
-            }
-        }
+        $animal = Ganado::factory()->create([
+            'produccion_minima_diaria' => 4.00,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $animal->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 3.0,
+        ]);
+
+        $service = app(AlertaService::class);
+
+        $this->assertCount(
+            0,
+            $service->produccion(User::factory()->create())
+        );
+
+        $animal->update(['estado' => 'Baja']);
+
+        $this->assertCount(
+            0,
+            $service->produccion($animal->lote->finca->user)
+        );
+    }
+
+    public function test_lot_generates_alert_when_average_production_is_below_minimum(): void
+    {
+        $user = User::factory()->create();
+
+        $finca = Finca::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $lote = Lote::factory()->create([
+            'finca_id' => $finca->id,
+            'produccion_minima_por_vaca' => 4.00,
+            'estado' => 'Activo',
+        ]);
+
+        $vaca1 = Ganado::factory()->create([
+            'lote_id' => $lote->id,
+            'sexo' => 'Hembra',
+            'estado' => 'Activo',
+            'estado_productivo' => 'En producción',
+        ]);
+
+        $vaca2 = Ganado::factory()->create([
+            'lote_id' => $lote->id,
+            'sexo' => 'Hembra',
+            'estado' => 'Activo',
+            'estado_productivo' => 'En producción',
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $vaca1->id,
+            'lote_historico_id' => $lote->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 3.00,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $vaca2->id,
+            'lote_historico_id' => $lote->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 3.00,
+        ]);
+
+        $alertas = app(AlertaService::class)->produccionLotes($user);
+
+        $this->assertCount(1, $alertas);
+
+        $alerta = $alertas->first();
+
+        $this->assertEquals($lote->id, $alerta->id);
+        $this->assertEquals(2, $alerta->vacas_produccion);
+        $this->assertEquals(6.00, $alerta->produccion);
+        $this->assertEquals(3.00, $alerta->promedio_por_vaca);
+        $this->assertEquals(8.00, $alerta->produccion_minima_esperada);
+    }
+
+    public function test_lot_does_not_generate_alert_when_reaching_minimum(): void
+    {
+        $user = User::factory()->create();
+
+        $finca = Finca::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $lote = Lote::factory()->create([
+            'finca_id' => $finca->id,
+            'produccion_minima_por_vaca' => 4.00,
+            'estado' => 'Activo',
+        ]);
+
+        $vaca1 = Ganado::factory()->create([
+            'lote_id' => $lote->id,
+            'sexo' => 'Hembra',
+            'estado' => 'Activo',
+            'estado_productivo' => 'En producción',
+        ]);
+
+        $vaca2 = Ganado::factory()->create([
+            'lote_id' => $lote->id,
+            'sexo' => 'Hembra',
+            'estado' => 'Activo',
+            'estado_productivo' => 'En producción',
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $vaca1->id,
+            'lote_historico_id' => $lote->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 4.00,
+        ]);
+
+        RegistroOrdenio::factory()->create([
+            'ganado_id' => $vaca2->id,
+            'lote_historico_id' => $lote->id,
+            'fecha' => today()->subDay(),
+            'numero_ordenio' => 1,
+            'turno' => null,
+            'litros' => 4.00,
+        ]);
+
+        $alertas = app(AlertaService::class)->produccionLotes($user);
+
+        $this->assertCount(0, $alertas);
     }
 }

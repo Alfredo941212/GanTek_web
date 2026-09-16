@@ -72,7 +72,7 @@ class GanaderiaAccessTest extends TestCase
         $this->postJson(route('vacunaciones.store'), ['ganado_id' => $other->id])->assertUnprocessable()->assertJsonValidationErrors('ganado_id');
         $this->postJson(route('ordenios.store'), ['ganado_id' => $other->id, 'fecha' => today()->toDateString()])->assertUnprocessable()->assertJsonValidationErrors('ganado_id');
         $this->postJson(route('ordenios.store'), [
-            'ganado_id' => $mine->id, 'fecha' => today()->subDay()->toDateString(), 'turno' => 'Mañana',
+            'ganado_id' => $mine->id, 'fecha' => today()->subDay()->toDateString(), 'numero_ordenio' => 1,'turno' => 'Mañana',
             'litros' => 5, 'lote_historico_id' => $other->lote_id,
         ])->assertUnprocessable()->assertJsonValidationErrors('lote_historico_id');
         foreach (['finca_id' => $other->lote->finca_id, 'lote_id' => $other->lote_id, 'ganado_id' => $other->id] as $filter => $id) {
