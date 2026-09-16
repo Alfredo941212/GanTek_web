@@ -1,18 +1,42 @@
 @extends('layouts.app')
-@section('title', 'Reportes | GanTek')
-@section('heading', 'Reportes')
-
+@section('title', 'Producción | GanTek')
+@section('heading', 'Producción e historial')
 @section('content')
+<form method="GET" class="panel">
+<div class="form-grid">
+@include('partials.field', ['name' => 'periodo', 'label' => 'Período', 'type' => 'select', 'value' => $periodo, 'options' => ['diario' => 'Hoy', 'semanal' => 'Semana actual', 'mensual' => 'Mes actual', 'personalizado' => 'Personalizado']])
+@include('partials.field', ['name' => 'desde', 'label' => 'Desde (personalizado)', 'type' => 'date', 'value' => $filtros['desde']])
+@include('partials.field', ['name' => 'hasta', 'label' => 'Hasta (personalizado)', 'type' => 'date', 'value' => $filtros['hasta']])
+@include('partials.field', ['name' => 'finca_id', 'label' => 'Finca histórica', 'type' => 'select', 'value' => $filtros['finca_id'] ?? '', 'options' => $fincas->pluck('nombre', 'id')])
+@include('partials.field', ['name' => 'lote_id', 'label' => 'Lote histórico', 'type' => 'select', 'value' => $filtros['lote_id'] ?? '', 'options' => $lotes->mapWithKeys(fn ($lote) => [$lote->id => $lote->finca->nombre.' / '.$lote->nombre])])
+@include('partials.field', ['name' => 'ganado_id', 'label' => 'Animal', 'type' => 'select', 'value' => $filtros['ganado_id'] ?? '', 'options' => $animales->pluck('arete_siniiga', 'id')])
+</div>
+<button class="btn primary" type="submit">Consultar</button>
+<a class="btn" href="{{ route('produccion.index') }}">Restablecer</a>
+</form>
+<p>Período: {{ $filtros['desde'] }} al {{ $filtros['hasta'] }}. Los lotes y fincas corresponden al momento del ordeño.</p>
 <div class="stats-grid">
-    <div class="stat-card"><span>Total ganado</span><strong>{{ $report['total_cattle'] }}</strong></div>
-    <div class="stat-card"><span>Disponibles</span><strong>{{ $report['available_cattle'] }}</strong></div>
-    <div class="stat-card"><span>Vendidos</span><strong>{{ $report['sold_cattle'] }}</strong></div>
-    <div class="stat-card"><span>Ventas completadas</span><strong>{{ $report['completed_sales'] }}</strong></div>
-    <div class="stat-card"><span>Total vendido</span><strong>${{ number_format($report['total_sales_amount'], 2) }}</strong></div>
-    <div class="stat-card"><span>Peso vendido</span><strong>{{ number_format($report['total_sold_weight'], 2) }} kg</strong></div>
-    <div class="stat-card"><span>Promedio $/kg</span><strong>${{ number_format($report['average_price_per_kg'], 2) }}</strong></div>
-    <div class="stat-card"><span>Vacunas aplicadas</span><strong>{{ $report['applied_vaccines'] }}</strong></div>
-    <div class="stat-card"><span>Vacunas próximas</span><strong>{{ $report['upcoming_vaccines'] }}</strong></div>
-    <div class="stat-card"><span>Vacunas vencidas</span><strong>{{ $report['overdue_vaccines'] }}</strong></div>
+<div class="stat-card"><span>Producción del período</span><strong>{{ number_format($resumen['total'], 2) }} L</strong></div>
+<div class="stat-card"><span>Promedio por día registrado</span><strong>{{ number_format($resumen['promedio'], 2) }} L</strong></div>
+<div class="stat-card"><span>Días con registros</span><strong>{{ $resumen['dias'] }}</strong></div>
+</div>
+<p>El promedio considera días con algún ordeño registrado; los días sin captura no se cuentan como cero. Hoy puede estar incompleto.</p>
+<div class="two-columns">
+<section class="panel"><h2>Por día</h2><table><thead><tr><th>Fecha</th><th>Litros</th></tr></thead><tbody>
+@forelse($resumen['diaria'] as $fila)<tr><td>{{ $fila->fecha->format('d/m/Y') }}</td><td>{{ number_format($fila->total, 2) }}</td></tr>
+@empty<tr><td colspan="2">Sin registros.</td></tr>@endforelse
+</tbody></table></section>
+<section class="panel"><h2>Por animal</h2><table><thead><tr><th>Animal</th><th>Litros</th></tr></thead><tbody>
+@forelse($resumen['animales'] as $fila)<tr><td><a href="{{ route('ganado.show', $fila->ganado) }}">{{ $fila->ganado->arete_siniiga }}</a></td><td>{{ number_format($fila->total, 2) }}</td></tr>
+@empty<tr><td colspan="2">Sin registros.</td></tr>@endforelse
+</tbody></table></section>
+<section class="panel"><h2>Por lote histórico</h2><table><thead><tr><th>Finca / lote</th><th>Litros</th></tr></thead><tbody>
+@forelse($resumen['lotes'] as $fila)<tr><td>{{ $fila->loteHistorico->finca->nombre }} / {{ $fila->loteHistorico->nombre }}</td><td>{{ number_format($fila->total, 2) }}</td></tr>
+@empty<tr><td colspan="2">Sin registros.</td></tr>@endforelse
+</tbody></table></section>
+<section class="panel"><h2>Por finca histórica</h2><table><thead><tr><th>Finca</th><th>Litros</th></tr></thead><tbody>
+@forelse($resumen['fincas'] as $fila)<tr><td>{{ $fila->nombre }}</td><td>{{ number_format($fila->total, 2) }}</td></tr>
+@empty<tr><td colspan="2">Sin registros.</td></tr>@endforelse
+</tbody></table></section>
 </div>
 @endsection

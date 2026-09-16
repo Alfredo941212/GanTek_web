@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cattle;
-use App\Models\Sale;
-use App\Models\Vaccine;
-use Carbon\Carbon;
+use App\Models\Ganado;
+use App\Services\AlertaService;
+use App\Services\ProduccionService;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request, ProduccionService $produccion, AlertaService $alertas): View
     {
-        $stats = [
-            'total_cattle' => Cattle::count(),
-            'available_cattle' => Cattle::where('status', 'Disponible')->count(),
-            'sold_cattle' => Cattle::where('status', 'Vendido')->count(),
-            'applied_vaccines' => Vaccine::count(),
-            'upcoming_vaccines' => Vaccine::whereNotNull('next_date')
-                ->whereBetween('next_date', [Carbon::today(), Carbon::today()->addDays(30)])
-                ->count(),
-            'total_sales' => Sale::sum('total_amount'),
-        ];
+        $user = $request->user();
+        $resumen = $produccion->resumen($user, ['desde' => today()->subDays(7)->toDateString(), 'hasta' => today()->subDay()->toDateString()]);
 
-        $recentCattle = Cattle::latest()->take(5)->get();
-        $recentSales = Sale::with('cattle')->latest('sale_date')->take(5)->get();
-
-        return view('dashboard', compact('stats', 'recentCattle', 'recentSales'));
+        return view('dashboard', [
+            'activos' => Ganado::forUser($user)->where('estado', 'Activo')->count(),
+            'litrosHoy' => $produccion->registros($user, ['desde' => today()->toDateString(), 'hasta' => today()->toDateString()])->sum('litros'),
+            'promedio' => $resumen['promedio'],
+            'diasPromedio' => $resumen['dias'],
+            'animales' => Ganado::forUser($user)->with('lote.finca')->latest()->limit(5)->get(),
+            'alertasProduccion' => $alertas->produccion($user),
+            'proximas' => $alertas->proximas($user)->with(['ganado', 'vacuna', 'veterinario'])->orderBy('proxima_aplicacion')->get(),
+            'vencidas' => $alertas->vencidas($user)->with(['ganado', 'vacuna'])->orderBy('proxima_aplicacion')->get(),
+        ]);
     }
 }

@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title', 'Editar ganado | GanTek')
-@section('heading', 'Editar animal')
+@section('title', 'Ganado | GanTek')
+@section('heading', 'Editar · Ganado')
 @section('content')
 <div class="panel form-panel">
-    <form method="POST" action="{{ route('ganado.update', $cattle) }}">
+    <form method="POST" action="{{ route('ganado.update', $animal) }}">
         @method('PUT')
         @include('cattle._form')
     </form>

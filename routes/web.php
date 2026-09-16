@@ -1,36 +1,39 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CattleController;
-use App\Http\Controllers\VaccineController;
-use App\Http\Controllers\SaleController;
+use App\Http\Controllers\FincaController;
+use App\Http\Controllers\GanadoController;
+use App\Http\Controllers\LoteController;
+use App\Http\Controllers\RegistroOrdenioController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Auth\SocialController;
-
-// Rutas de autenticación social
-Route::get('/auth/google', [SocialController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [SocialController::class, 'handleGoogleCallback'])->name('auth.google.callback');
-
-Route::get('/auth/facebook', [SocialController::class, 'redirectToFacebook'])->name('auth.facebook');
-Route::get('/auth/facebook/callback', [SocialController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
+use App\Http\Controllers\VacunacionController;
+use App\Http\Controllers\VacunaController;
+use App\Http\Controllers\VeterinarioController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
 
-Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.process');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('login.process');
+    Route::get('/auth/google', [SocialController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [SocialController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+    Route::get('/auth/facebook', [SocialController::class, 'redirectToFacebook'])->name('auth.facebook');
+    Route::get('/auth/facebook/callback', [SocialController::class, 'handleFacebookCallback'])->name('auth.facebook.callback');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::resource('ganado', CattleController::class);
-    Route::resource('vacunas', VaccineController::class)->except(['show']);
-    Route::resource('ventas', SaleController::class)->except(['show']);
-
+    Route::resource('fincas', FincaController::class)->parameters(['fincas' => 'finca'])->except('show');
+    Route::resource('lotes', LoteController::class)->parameters(['lotes' => 'lote'])->except('show');
+    Route::resource('ganado', GanadoController::class)->parameters(['ganado' => 'ganado']);
+    Route::resource('veterinarios', VeterinarioController::class)->parameters(['veterinarios' => 'veterinario'])->except('show');
+    Route::resource('vacunas', VacunaController::class)->parameters(['vacunas' => 'vacuna'])->except('show');
+    Route::resource('vacunaciones', VacunacionController::class)->parameters(['vacunaciones' => 'vacunacion'])->except('show');
+    Route::resource('ordenios', RegistroOrdenioController::class)->parameters(['ordenios' => 'ordenio'])->except('show');
+    Route::get('/produccion', [ReportController::class, 'index'])->name('produccion.index');
     Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
 });
