@@ -22,6 +22,7 @@ class DashboardController extends Controller
             'diasPromedio' => $resumen['dias'],
             'animales' => Ganado::forUser($user)->with('lote.finca')->latest()->limit(5)->get(),
             'alertasProduccion' => $alertas->produccion($user),
+            'alertasLotes' => $alertas->produccionLotes($user),
             'proximas' => $alertas->proximas($user)->with(['ganado', 'vacuna', 'veterinario'])->orderBy('proxima_aplicacion')->get(),
             'vencidas' => $alertas->vencidas($user)->with(['ganado', 'vacuna'])->orderBy('proxima_aplicacion')->get(),
         ]);

@@ -14,6 +14,21 @@ class RegistroOrdenioFactory extends Factory
     /** @return array<string, mixed> */
     public function definition(): array
     {
-        return ['ganado_id' => Ganado::factory(), 'lote_historico_id' => fn (array $attributes): int => Ganado::findOrFail($attributes['ganado_id'])->lote_id, 'fecha' => today(), 'turno' => 'Mañana', 'litros' => '5.00'];
+        return [
+            'ganado_id' => Ganado::factory(),
+
+            'lote_historico_id' => fn(array $attributes): int =>
+            Ganado::findOrFail($attributes['ganado_id'])->lote_id,
+
+            'fecha' => today(),
+
+            'turno' => 'Mañana',
+
+            'numero_ordenio' => function (array $attributes): int {
+                return ($attributes['turno'] ?? 'Mañana') === 'Tarde' ? 2 : 1;
+            },
+
+            'litros' => '5.00',
+        ];
     }
 }

@@ -25,7 +25,7 @@ class GanadoRequest extends FormRequest
         $ganado = $this->route('ganado');
 
         return [
-            'lote_id' => ['required', 'integer', Rule::exists('lotes', 'id')->where(fn (Builder $query) => $query
+            'lote_id' => ['required', 'integer', Rule::exists('lotes', 'id')->where(fn(Builder $query) => $query
                 ->whereIn('finca_id', Finca::forUser($this->user())->select('id'))
                 ->where(function (Builder $lotes) use ($ganado): void {
                     $lotes->where('estado', 'Activo');
@@ -40,6 +40,23 @@ class GanadoRequest extends FormRequest
             'fecha_nacimiento' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:fecha_ingreso'],
             'fecha_ingreso' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
             'peso_inicial' => ['nullable', 'numeric', 'min:0', 'max:999999.99', 'decimal:0,2'],
+            'estado_productivo' => [
+                'required',
+                Rule::in([
+                    'En producción',
+                    'Seca',
+                    'Gestante',
+                    'No aplica',
+                ]),
+            ],
+
+            'produccion_minima_diaria' => [
+                'required',
+                'numeric',
+                'gt:0',
+                'max:999999.99',
+                'decimal:0,2',
+            ],
             'estado' => ['required', Rule::in(['Activo', 'Vendido', 'Fallecido', 'Baja'])],
             'observaciones' => ['nullable', 'string', 'max:2000'],
         ];

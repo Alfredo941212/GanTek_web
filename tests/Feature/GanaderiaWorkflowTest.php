@@ -22,21 +22,41 @@ class GanaderiaWorkflowTest extends TestCase
         $this->post(route('fincas.store'), ['nombre' => 'Mi finca', 'municipio' => 'Prueba', 'estado' => 'Veracruz'])->assertRedirect(route('fincas.index'));
         $finca = Finca::firstOrFail();
         $this->assertSame($user->id, $finca->user_id);
-        $this->post(route('lotes.store'), ['finca_id' => $finca->id, 'nombre' => 'Mi lote', 'estado' => 'Activo'])->assertRedirect(route('lotes.index'));
+        $this->post(route('lotes.store'), ['finca_id' => $finca->id, 'nombre' => 'Mi lote',  'produccion_minima_por_vaca' => 4.00, 'estado' => 'Activo'])->assertRedirect(route('lotes.index'));
         $lote = Lote::firstOrFail();
         $this->post(route('ganado.store'), [
-            'lote_id' => $lote->id, 'arete_siniiga' => 'DEMO-001', 'sexo' => 'Hembra',
-            'fecha_ingreso' => today()->subDays(30)->toDateString(), 'estado' => 'Activo',
+            'lote_id' => $lote->id,
+            'arete_siniiga' => 'DEMO-001',
+            'sexo' => 'Hembra',
+            'fecha_ingreso' => today()->subDays(30)->toDateString(),
+            'estado_productivo' => 'En producción',
+            'produccion_minima_diaria' => 4.00,
+            'estado' => 'Activo',
         ])->assertRedirect(route('ganado.index'));
         $animal = Ganado::firstOrFail();
         $this->post(route('veterinarios.store'), ['nombre' => 'Dra. Demo', 'cedula_profesional' => 'DEMO-01', 'estado' => 'Activo'])->assertRedirect(route('veterinarios.index'));
         $this->post(route('vacunas.store'), ['nombre' => 'Vacuna demo', 'estado' => 'Activo'])->assertRedirect(route('vacunas.index'));
         $this->post(route('vacunaciones.store'), [
-            'ganado_id' => $animal->id, 'veterinario_id' => Veterinario::firstOrFail()->id, 'vacuna_id' => Vacuna::firstOrFail()->id,
-            'fecha_aplicacion' => today()->toDateString(), 'proxima_aplicacion' => today()->addDays(5)->toDateString(), 'dosis' => '2 ml',
+            'ganado_id' => $animal->id,
+            'veterinario_id' => Veterinario::firstOrFail()->id,
+            'vacuna_id' => Vacuna::firstOrFail()->id,
+            'fecha_aplicacion' => today()->toDateString(),
+            'proxima_aplicacion' => today()->addDays(5)->toDateString(),
+            'dosis' => '2 ml',
         ])->assertRedirect(route('vacunaciones.index'));
-        foreach (['Mañana' => 5.2, 'Tarde' => 4.1] as $turno => $litros) {
-            $this->post(route('ordenios.store'), ['ganado_id' => $animal->id, 'fecha' => today()->toDateString(), 'turno' => $turno, 'litros' => $litros])->assertRedirect(route('ordenios.index'));
+        foreach (
+            [
+                ['numero_ordenio' => 1, 'turno' => 'Mañana', 'litros' => 5.2],
+                ['numero_ordenio' => 2, 'turno' => 'Tarde', 'litros' => 4.1],
+            ] as $ordenio
+        ) {
+            $this->post(route('ordenios.store'), [
+                'ganado_id' => $animal->id,
+                'fecha' => today()->toDateString(),
+                'numero_ordenio' => $ordenio['numero_ordenio'],
+                'turno' => $ordenio['turno'],
+                'litros' => $ordenio['litros'],
+            ])->assertRedirect(route('ordenios.index'));
         }
         $this->assertEquals(9.3, RegistroOrdenio::sum('litros'));
         $this->assertSame($lote->id, RegistroOrdenio::firstOrFail()->lote_historico_id);
@@ -54,13 +74,13 @@ class GanaderiaWorkflowTest extends TestCase
         $user = User::where('email', 'admin@gantek.test')->firstOrFail();
         $this->actingAs($user);
         foreach (['fincas' => Finca::class, 'lotes' => Lote::class, 'ganado' => Ganado::class, 'vacunaciones' => Vacunacion::class, 'ordenios' => RegistroOrdenio::class] as $resource => $model) {
-            $this->get(route($resource.'.create'))->assertOk();
-            $this->get(route($resource.'.edit', $model::forUser($user)->firstOrFail()))->assertOk();
+            $this->get(route($resource . '.create'))->assertOk();
+            $this->get(route($resource . '.edit', $model::forUser($user)->firstOrFail()))->assertOk();
         }
         foreach (['vacunas' => Vacuna::class, 'veterinarios' => Veterinario::class] as $resource => $model) {
-            $this->get(route($resource.'.index'))->assertOk();
-            $this->get(route($resource.'.create'))->assertOk();
-            $this->get(route($resource.'.edit', $model::firstOrFail()))->assertOk();
+            $this->get(route($resource . '.index'))->assertOk();
+            $this->get(route($resource . '.create'))->assertOk();
+            $this->get(route($resource . '.edit', $model::firstOrFail()))->assertOk();
         }
         $this->get(route('reportes.index'))->assertOk();
         $this->get('/ventas')->assertNotFound();
@@ -83,7 +103,7 @@ class GanaderiaWorkflowTest extends TestCase
     {
         $animal = Ganado::factory()->create();
         $this->actingAs($animal->lote->finca->user);
-        $data = ['ganado_id' => $animal->id, 'fecha' => today()->subDay()->toDateString(), 'turno' => 'Mañana', 'litros' => 5];
+        $data = ['ganado_id' => $animal->id, 'fecha' => today()->subDay()->toDateString(),'numero_ordenio' => 1, 'turno' => 'Mañana', 'litros' => 5];
         $this->postJson(route('ordenios.store'), $data)->assertUnprocessable()->assertJsonValidationErrors('lote_historico_id');
         $this->post(route('ordenios.store'), $data + ['lote_historico_id' => $animal->lote_id])->assertRedirect();
         $this->assertDatabaseCount('registros_ordenio', 1);
@@ -93,7 +113,7 @@ class GanaderiaWorkflowTest extends TestCase
     {
         $registro = RegistroOrdenio::factory()->create();
         $this->actingAs($registro->ganado->lote->finca->user);
-        foreach (['ganado_id', 'lote_historico_id', 'fecha', 'turno'] as $field) {
+        foreach (['ganado_id', 'lote_historico_id', 'fecha','numero_ordenio', 'turno'] as $field) {
             $this->putJson(route('ordenios.update', $registro), ['litros' => 5, $field => null])
                 ->assertUnprocessable()->assertJsonValidationErrors($field);
         }
@@ -113,11 +133,19 @@ class GanaderiaWorkflowTest extends TestCase
         $this->actingAs($oldLot->finca->user);
         $animal->update(['lote_id' => $newLot->id]);
         $this->post(route('ordenios.store'), [
-            'ganado_id' => $animal->id, 'fecha' => today()->toDateString(), 'turno' => 'Mañana',
-            'litros' => 5, 'lote_historico_id' => $oldLot->id,
+            'ganado_id' => $animal->id,
+            'fecha' => today()->toDateString(),
+            'numero_ordenio' => 1,
+            'turno' => 'Mañana',
+            'litros' => 5,
+            'lote_historico_id' => $oldLot->id,
         ])->assertRedirect(route('ordenios.index'));
         $this->post(route('ordenios.store'), [
-            'ganado_id' => $animal->id, 'fecha' => today()->toDateString(), 'turno' => 'Tarde', 'litros' => 4,
+            'ganado_id' => $animal->id,
+            'fecha' => today()->toDateString(),
+            'numero_ordenio' => 2,
+            'turno' => 'Tarde',
+            'litros' => 4,
         ])->assertRedirect(route('ordenios.index'));
         $this->assertSame($oldLot->id, RegistroOrdenio::where('turno', 'Mañana')->firstOrFail()->lote_historico_id);
         $this->assertSame($newLot->id, RegistroOrdenio::where('turno', 'Tarde')->firstOrFail()->lote_historico_id);
@@ -135,8 +163,11 @@ class GanaderiaWorkflowTest extends TestCase
         $this->assertModelExists($vacunacion);
         $this->get(route('ganado.show', $vacunacion->ganado))->assertOk();
         $this->postJson(route('vacunaciones.store'), [
-            'ganado_id' => $vacunacion->ganado_id, 'veterinario_id' => $vacunacion->veterinario_id,
-            'vacuna_id' => $vacunacion->vacuna_id, 'fecha_aplicacion' => today()->toDateString(), 'dosis' => '2 ml',
+            'ganado_id' => $vacunacion->ganado_id,
+            'veterinario_id' => $vacunacion->veterinario_id,
+            'vacuna_id' => $vacunacion->vacuna_id,
+            'fecha_aplicacion' => today()->toDateString(),
+            'dosis' => '2 ml',
         ])->assertUnprocessable()->assertJsonValidationErrors(['veterinario_id', 'vacuna_id']);
     }
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'GanTek Web')</title>
     <link rel="stylesheet" href="{{ asset('css/gantek.css') }}">
+    @vite('resources/js/app.js')
 </head>
 <body>
 <div class="app-shell">

@@ -22,8 +22,12 @@ class GanaderiaIntegrityTest extends TestCase
             DB::table('registros_ordenio')->where('id', $registro->id)->update(['litros' => $litros]);
         } else {
             DB::table('registros_ordenio')->insert([
-                'ganado_id' => $registro->ganado_id, 'lote_historico_id' => $registro->lote_historico_id,
-                'fecha' => today()->toDateString(), 'turno' => 'Tarde', 'litros' => $litros,
+                'ganado_id' => $registro->ganado_id,
+                'lote_historico_id' => $registro->lote_historico_id,
+                'fecha' => today()->toDateString(),
+                'numero_ordenio' => 2,
+                'turno' => 'Tarde',
+                'litros' => $litros,
             ]);
         }
     }
@@ -34,14 +38,20 @@ class GanaderiaIntegrityTest extends TestCase
         return ['insert zero' => [0.0, false], 'insert negative' => [-1.0, false], 'update zero' => [0.0, true], 'update negative' => [-1.0, true]];
     }
 
-    public function test_database_rejects_duplicate_animal_date_and_shift(): void
+    public function test_database_rejects_duplicate_animal_date_and_milking_number(): void
     {
         $registro = RegistroOrdenio::factory()->create();
+
         $this->expectException(QueryException::class);
-        DB::table('registros_ordenio')->insert(array_replace(
-            $registro->only(['ganado_id', 'lote_historico_id', 'fecha', 'turno', 'litros']),
-            ['fecha' => $registro->getRawOriginal('fecha')],
-        ));
+
+        DB::table('registros_ordenio')->insert([
+            'ganado_id' => $registro->ganado_id,
+            'lote_historico_id' => $registro->lote_historico_id,
+            'fecha' => $registro->getRawOriginal('fecha'),
+            'numero_ordenio' => $registro->numero_ordenio,
+            'turno' => 'Tarde',
+            'litros' => 5,
+        ]);
     }
 
     public function test_database_rejects_duplicate_siniiga(): void
@@ -72,11 +82,14 @@ class GanaderiaIntegrityTest extends TestCase
     {
         $registro = RegistroOrdenio::factory()->create();
         $this->actingAs($registro->ganado->lote->finca->user);
-        $data = ['ganado_id' => $registro->ganado_id, 'fecha' => today()->toDateString(), 'turno' => 'Tarde', 'litros' => 5];
+        $data = ['ganado_id' => $registro->ganado_id, 'fecha' => today()->toDateString(), 'numero_ordenio' => 2, 'turno' => 'Tarde', 'litros' => 5];
         foreach ([0, -1, 0.001, 1000000] as $amount) {
             $this->postJson(route('ordenios.store'), array_replace($data, ['litros' => $amount]))->assertUnprocessable()->assertJsonValidationErrors('litros');
         }
-        $this->postJson(route('ordenios.store'), array_replace($data, ['turno' => 'Mañana']))->assertUnprocessable()->assertJsonValidationErrors('turno');
+        $this->postJson(
+            route('ordenios.store'),
+            array_replace($data, ['numero_ordenio' => $registro->numero_ordenio])
+        )->assertUnprocessable()->assertJsonValidationErrors('numero_ordenio');
         $this->postJson(route('ordenios.store'), array_replace($data, ['fecha' => today()->addDay()->toDateString()]))->assertUnprocessable()->assertJsonValidationErrors('fecha');
         $male = Ganado::factory()->create(['lote_id' => $registro->ganado->lote_id, 'sexo' => 'Macho']);
         $this->postJson(route('ordenios.store'), array_replace($data, ['ganado_id' => $male->id]))->assertUnprocessable()->assertJsonValidationErrors('ganado_id');

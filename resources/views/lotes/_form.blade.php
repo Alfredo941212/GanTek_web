@@ -8,6 +8,15 @@
 @endif
 @include('partials.field', ['name' => 'nombre', 'label' => 'Nombre', 'type' => 'text', 'required' => true, 'value' => $registro?->nombre ?? ''])
 @include('partials.field', ['name' => 'descripcion', 'label' => 'Descripción', 'type' => 'textarea', 'required' => false, 'value' => $registro?->descripcion ?? ''])
+@include('partials.field', [
+    'name' => 'produccion_minima_por_vaca',
+    'label' => 'Producción mínima por vaca (L/día)',
+    'type' => 'number',
+    'required' => true,
+    'value' => $registro?->produccion_minima_por_vaca ?? '4.00',
+    'step' => '0.01',
+    'min' => '0.01'
+])
 @include('partials.field', ['name' => 'estado', 'label' => 'Estado', 'type' => 'select', 'required' => true, 'value' => $registro?->estado ?? '', 'options' => ['Activo' => 'Activo', 'Inactivo' => 'Inactivo']])
 </div>
 <button class="btn primary" type="submit">Guardar</button>
