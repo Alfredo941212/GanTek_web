@@ -86,7 +86,6 @@ class ApiRegistroOrdenioTest extends TestCase
             ->postJson('/api/ordenios', [
                 'ganado_id' => $animal->id,
                 'fecha' => today()->toDateString(),
-                'numero_ordenio' => 1,
                 'turno' => null,
                 'litros' => 4.75,
                 'observaciones' => 'Registro desde API.',

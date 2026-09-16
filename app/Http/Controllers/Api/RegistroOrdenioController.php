@@ -66,6 +66,22 @@ class RegistroOrdenioController extends Controller
 
                 $data['lote_historico_id'] = $lote->id;
 
+                // El número de ordeña se asigna automáticamente
+                // según los registros de esta vaca en la fecha seleccionada.
+                $ultimoNumero = $animal->registrosOrdenio()
+                    ->whereDate('fecha', $data['fecha'])
+                    ->max('numero_ordenio');
+
+                $numeroOrdenio = ((int) $ultimoNumero) + 1;
+
+                if ($numeroOrdenio > 20) {
+                    throw ValidationException::withMessages([
+                        'numero_ordenio' => 'No se pueden registrar más de 20 ordeños para este animal en la misma fecha.',
+                    ]);
+                }
+
+                $data['numero_ordenio'] = $numeroOrdenio;
+
                 return $animal->registrosOrdenio()->create($data);
             });
         } catch (UniqueConstraintViolationException $exception) {

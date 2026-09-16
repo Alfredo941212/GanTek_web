@@ -81,15 +81,19 @@ class RegistroOrdenioRequest extends FormRequest
                 'before_or_equal:today',
             ],
 
-            'numero_ordenio' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:20',
-                Rule::unique('registros_ordenio', 'numero_ordenio')
-                    ->where('ganado_id', $this->input('ganado_id'))
-                    ->where('fecha', $this->input('fecha')),
-            ],
+            'numero_ordenio' => $this->routeIs('api.*')
+                ? [
+                    'missing',
+                ]
+                : [
+                    'required',
+                    'integer',
+                    'min:1',
+                    'max:20',
+                    Rule::unique('registros_ordenio', 'numero_ordenio')
+                        ->where('ganado_id', $this->input('ganado_id'))
+                        ->where('fecha', $this->input('fecha')),
+                ],
 
             'turno' => [
                 'nullable',
