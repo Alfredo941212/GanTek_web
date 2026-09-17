@@ -38,6 +38,10 @@ h2 { font-size:20px }
 .sidebar-bottom p { font-size:12px; color:#c1d4c4; padding:0 10px }
 .logout-btn { width:100%; min-height:44px; border:1px solid #7c9a85; border-radius:9px; color:white; background:#ffffff0a }
 .workspace { min-width:0; display:flex; flex-direction:column; background:radial-gradient(ellipse at 95% 0%,#c8dca6aa,transparent 50%),linear-gradient(150deg,#edf1ddde,#d0e5d4ed 55%,#e9e4cedd),url('/images/ganado-fondo.jpg') center/cover fixed }
+.workspace { height:100dvh; display:grid; grid-template-rows:auto minmax(0,1fr) auto }
+.workspace > .content { min-height:0; overflow:auto; scrollbar-gutter:stable; scroll-padding:20px }
+.production-chart { position:relative; height:340px; width:100% }
+input:disabled { background:#e0e7d9; color:#52624e; cursor:not-allowed }
 .topbar { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 28px; min-height:80px; background:#edf4e9ef; border-bottom:1px solid #b7cdbb }
 .topbar-label { font-size:12px; color:#436450; letter-spacing:.5px }
 .topbar-label span { padding:0 10px; color:#ab783e }
@@ -167,6 +171,11 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
     .form-grid { grid-template-columns:1fr; gap:20px }
     .toolbar form { flex-basis:100%; min-width:0 }
     .app-footer { flex-direction:column; align-items:flex-start; padding:20px 16px }
+    .app-footer { padding:10px 16px; gap:4px }
+    .app-footer img { width:38px; height:32px }
+    .app-footer strong { font-size:11px }
+    .app-footer>div span small { display:none }
+    .production-chart { height:260px }
     .pagination { align-items:flex-start; flex-direction:column }
     .dialog-actions .btn { flex:1 }
 }
