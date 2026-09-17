@@ -588,3 +588,637 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #cfd8d1;bord
 
     background:#e9f5ee;
 }
+
+/* =========================================================
+   LOGIN GANTEK
+========================================================= */
+
+.login-page {
+    min-height: 100vh;
+    background: #f8faf7;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    position: relative;
+}
+
+
+/* =========================================================
+   IMAGEN GRANDE DEL GANADO
+========================================================= */
+
+.login-decoration {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 58%;
+    height: 100%;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+
+/* Fotografía */
+
+.login-cow-image {
+    position: absolute;
+
+    /*
+       Más grande que antes.
+       El ganado ocupará aproximadamente
+       la mitad izquierda de la pantalla.
+    */
+
+    left: -100px;
+    top: -120px;
+
+    width: 950px;
+    height: 950px;
+
+    background-image: url('/images/login-ganado.png');
+
+    background-size: cover;
+
+    /* Cambia este valor si quieres mover la vaca */
+    background-position: center center;
+
+    background-repeat: no-repeat;
+
+    /*
+       Forma curva inferior derecha
+    */
+
+    border-radius: 0 0 100% 0;
+
+    opacity: .98;
+}
+
+
+/* =========================================================
+   CONTORNO CURVO
+========================================================= */
+
+.login-decoration::after {
+    content: "";
+
+    position: absolute;
+
+    left: -115px;
+    top: -135px;
+
+    width: 980px;
+    height: 980px;
+
+    border-radius: 0 0 100% 0;
+
+    border-right:
+        2px solid rgba(24, 91, 69, .10);
+
+    border-bottom:
+        2px solid rgba(24, 91, 69, .10);
+
+    box-shadow:
+        20px 20px 0 rgba(24, 91, 69, .025),
+        40px 40px 0 rgba(24, 91, 69, .015);
+}
+
+
+/* =========================================================
+   FRASE INFERIOR
+========================================================= */
+
+.login-slogan {
+    position: absolute;
+
+    left: 55px;
+    bottom: 55px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    color: #527466;
+
+    font-size: 15px;
+
+    letter-spacing: 4px;
+
+    line-height: 1.5;
+
+    z-index: 2;
+}
+
+
+.login-slogan strong {
+    color: #185b45;
+
+    font-size: 23px;
+
+    letter-spacing: 5px;
+}
+
+
+/* =========================================================
+   TARJETA LOGIN
+========================================================= */
+
+.login-card {
+    position: relative;
+
+    z-index: 10;
+
+    width: 430px;
+
+    /*
+       Mueve la tarjeta hacia la derecha.
+    */
+
+    margin-left: 34%;
+
+    padding: 32px 40px 30px;
+
+    background: rgba(255, 255, 255, .97);
+
+    border-radius: 18px;
+
+    border:
+        1px solid rgba(24, 91, 69, .08);
+
+    box-shadow:
+        0 18px 45px rgba(28, 54, 43, .14);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.login-logo {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 8px;
+}
+
+
+.logo-circle {
+    width: 82px;
+    height: 82px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: #f5f8f5;
+
+    border:
+        2px solid rgba(24, 91, 69, .12);
+
+    box-shadow:
+        0 5px 15px rgba(24, 91, 69, .08);
+}
+
+
+.logo-circle img {
+    width: 68px;
+    height: 68px;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   TÍTULOS
+========================================================= */
+
+.login-title {
+    margin: 0;
+
+    text-align: center;
+
+    color: #185b45;
+
+    font-size: 25px;
+
+    font-weight: 800;
+}
+
+
+.login-welcome {
+    margin-top: 10px;
+    margin-bottom: 5px;
+
+    text-align: center;
+
+    color: #26352e;
+
+    font-size: 25px;
+
+    font-weight: 700;
+}
+
+
+.login-subtitle {
+    margin-top: 0;
+    margin-bottom: 25px;
+
+    text-align: center;
+
+    color: #727b76;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ERRORES
+========================================================= */
+
+.login-error {
+    margin-bottom: 18px;
+
+    padding: 11px 13px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CAMPOS
+========================================================= */
+
+.login-field {
+    margin-bottom: 17px;
+}
+
+
+.login-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #26352e;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.login-input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border:
+        1px solid #d4ddd8;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #26352e;
+
+    font-size: 14px;
+
+    transition: all .2s ease;
+}
+
+
+.login-input:focus {
+    border-color: #287154;
+
+    box-shadow:
+        0 0 0 3px rgba(40, 113, 84, .10);
+}
+
+
+/* =========================================================
+   OLVIDASTE CONTRASEÑA
+========================================================= */
+
+.forgot-password {
+    text-align: right;
+
+    margin-top: -3px;
+    margin-bottom: 17px;
+}
+
+
+.forgot-password a {
+    color: #1d684d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   RECORDARME
+========================================================= */
+
+.remember-container {
+    margin-bottom: 21px;
+}
+
+
+.remember-container label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #59635e;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+
+.remember-container input {
+    width: 15px;
+    height: 15px;
+
+    accent-color: #1d684d;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BOTÓN INICIAR SESIÓN
+========================================================= */
+
+.login-button {
+    width: 100%;
+
+    padding: 12px 16px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #1d684d;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+
+.login-button:hover {
+    background: #14513c;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 17px rgba(29, 104, 77, .20);
+}
+
+
+/* =========================================================
+   REGISTRO
+========================================================= */
+
+.register-text {
+    margin-top: 19px;
+
+    text-align: center;
+
+    color: #68736d;
+
+    font-size: 13px;
+}
+
+
+.register-text a {
+    color: #1d684d;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.register-text a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   SEPARADOR SOCIAL
+========================================================= */
+
+.social-divider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 23px 0 17px;
+}
+
+
+.social-divider::before,
+.social-divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #d9dfdc;
+}
+
+
+.social-divider span {
+    color: #7a837e;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   GOOGLE / FACEBOOK
+========================================================= */
+
+.social-buttons {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.social-button {
+    width: 100%;
+
+    min-height: 43px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    border:
+        1px solid #d5ddd9;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #34413b;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: all .2s ease;
+}
+
+
+.social-button:hover {
+    background: #f7faf8;
+
+    border-color: #b9c9c1;
+
+    transform: translateY(-1px);
+}
+
+
+.social-button svg {
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .login-cow-image {
+        width: 800px;
+        height: 800px;
+    }
+
+    .login-decoration::after {
+        width: 830px;
+        height: 830px;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .login-decoration {
+        width: 100%;
+
+        opacity: .13;
+    }
+
+    .login-cow-image {
+        width: 100%;
+        height: 100%;
+
+        left: 0;
+        top: 0;
+
+        border-radius: 0;
+
+        background-position: center;
+    }
+
+    .login-decoration::after {
+        display: none;
+    }
+
+    .login-slogan {
+        display: none;
+    }
+
+    .login-card {
+        margin-left: 0;
+
+        width: min(430px, 88vw);
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .login-card {
+        width: 92vw;
+
+        padding: 28px 23px 25px;
+    }
+
+    .logo-circle {
+        width: 72px;
+        height: 72px;
+    }
+
+    .logo-circle img {
+        width: 59px;
+        height: 59px;
+    }
+
+    .login-title {
+        font-size: 23px;
+    }
+
+    .login-welcome {
+        font-size: 22px;
+    }
+
+}
