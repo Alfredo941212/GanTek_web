@@ -1,11 +1,15 @@
 @extends('layouts.app')
 @section('title', 'Producción | GanTek')
 @section('heading', 'Producción e historial')
+@section('subheading', 'Consulta la evolución de la leche registrada y su origen histórico.')
 @section('content')
-    <form method="GET" class="panel">
+    <form method="GET" class="panel" id="production-filters">
+        <h2>Consultar producción</h2>
+        <p>Elige un período. Para indicar fechas, selecciona Personalizado. Los filtros vacíos incluyen todos tus registros.</p>
         <div class="form-grid">
             @include('partials.field', [
                 'name' => 'periodo',
+                'required' => true,
                 'label' => 'Período',
                 'type' => 'select',
                 'value' => $periodo,
@@ -79,11 +83,14 @@
         </h2>
 
         @if ($resumen['diaria']->isNotEmpty())
-            <div style="position: relative; height: 380px; width: 100%;">
-                <canvas id="graficaProduccion"></canvas>
+            <p>Litros por día con registros. Los días sin captura no equivalen a cero.</p>
+            <p id="chart-status" class="alert info" role="status">Cargando gráfica. También puedes consultar los valores en la tabla Por día.</p>
+            <div class="production-chart">
+                <canvas id="graficaProduccion" role="img" aria-label="Producción diaria en litros. Los valores están disponibles en la tabla Por día." data-labels='@json($resumen["diaria"]->map(fn ($fila) => $fila->fecha->format("d/m/Y"))->values())' data-values='@json($resumen["diaria"]->map(fn ($fila) => (float) $fila->total)->values())'></canvas>
+                <noscript>Activa JavaScript para ver la gráfica. Los datos están disponibles en las tablas.</noscript>
             </div>
         @else
-            <p>Sin datos de producción para mostrar en la gráfica.</p>
+            <div class="alert info">No hay ordeños con estos filtros. Amplía el período o restablece la consulta.</div>
         @endif
     </section>
 
@@ -92,7 +99,7 @@
     <div class="two-columns">
         <section class="panel">
             <h2>Por día</h2>
-            <table>
+            <div class="table-scroll"><table>
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -110,11 +117,11 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table></div>
         </section>
         <section class="panel">
             <h2>Por animal</h2>
-            <table>
+            <div class="table-scroll"><table>
                 <thead>
                     <tr>
                         <th>Animal</th>
@@ -133,11 +140,11 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table></div>
         </section>
         <section class="panel">
             <h2>Por lote histórico</h2>
-            <table>
+            <div class="table-scroll"><table>
                 <thead>
                     <tr>
                         <th>Finca / lote</th>
@@ -155,11 +162,11 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table></div>
         </section>
         <section class="panel">
             <h2>Por finca histórica</h2>
-            <table>
+            <div class="table-scroll"><table>
                 <thead>
                     <tr>
                         <th>Finca</th>
@@ -177,78 +184,12 @@
                         </tr>
                     @endforelse
                 </tbody>
-            </table>
+            </table></div>
         </section>
     </div>
 
-    @if ($resumen['diaria']->isNotEmpty())
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const canvas = document.getElementById('graficaProduccion');
-
-                if (!canvas || typeof Chart === 'undefined') {
-                    return;
-                }
-
-                const etiquetas = @json($resumen['diaria']->map(fn($fila) => $fila->fecha->format('d/m/Y'))->values());
-
-                const valores = @json($resumen['diaria']->map(fn($fila) => (float) $fila->total)->values());
-
-                new Chart(canvas, {
-                    type: 'line',
-
-                    data: {
-                        labels: etiquetas,
-
-                        datasets: [{
-                            label: 'Producción (L)',
-                            data: valores,
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: false,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
-                    },
-
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-
-                        plugins: {
-                            legend: {
-                                display: true
-                            },
-
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.parsed.y.toFixed(2) + ' L';
-                                    }
-                                }
-                            }
-                        },
-
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-
-                                title: {
-                                    display: true,
-                                    text: 'Litros'
-                                }
-                            },
-
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Fecha'
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-        </script>
-    @endif
 @endsection
+
+@push('scripts')
+    @vite('resources/js/app.js')
+@endpush
