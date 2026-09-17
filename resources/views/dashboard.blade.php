@@ -1,23 +1,17 @@
 @extends('layouts.app')
 @section('title', 'Dashboard | GanTek')
 
-@section('heading', '')
+@section('heading', 'Tu finca, de un vistazo')
+@section('subheading', 'Producción, salud y cuidados: cada decisión empieza con información.')
 
 @section('content')
 
 <div class="dashboard-page">
 
-    <div class="dashboard-hero">
-        <div class="dashboard-welcome">
-            <h1>🌿 ¡Bienvenido!</h1>
-            <p>Sistema web de gestión ganadera</p>
-        </div>
-    </div>
-
     <div class="stats-grid">
 
         <div class="stat-card">
-            <span>🐄 Animales activos</span>
+            <span>@include('partials.icon', ['name' => 'Ganado']) Animales activos</span>
             <strong>{{ $activos }}</strong>
             <small>En tu hato</small>
         </div>
@@ -43,9 +37,9 @@
         </div>
 
         <div class="stat-card">
-            <span>🔔 Alertas de producción</span>
+            <span>@include('partials.icon', ['name' => 'Alerta']) Alertas de producción</span>
             <strong>{{ $alertasProduccion->count() }}</strong>
-            <small>Revisión requerida</small>
+            <small>{{ $alertasProduccion->isEmpty() ? 'Sin alertas detectadas' : 'Animales por revisar' }}</small>
         </div>
 
         <div class="stat-card">
@@ -78,9 +72,9 @@
 
         <section class="panel">
 
-            <h2>🐄 Ganado reciente</h2>
+            <h2>@include('partials.icon', ['name' => 'Ganado']) Ganado reciente</h2>
 
-            <table>
+            <div class="table-scroll"><table>
 
                 <thead>
                     <tr>
@@ -124,13 +118,13 @@
 
                 </tbody>
 
-            </table>
+            </table></div>
 
         </section>
 
         <section class="panel">
 
-            <h2>⚠️ Baja producción individual</h2>
+            <h2 id="avisos" tabindex="-1">@include('partials.icon', ['name' => 'Alerta']) Baja producción individual</h2>
 
 <p>
     Se muestra una alerta cuando la producción total de ayer
@@ -168,7 +162,7 @@
 @empty
 
     <div class="dashboard-message">
-        ℹ️ No hay alertas de baja producción individual.
+         No hay alertas de baja producción individual.
     </div>
 
 @endforelse
@@ -177,7 +171,7 @@
 
         <section class="panel">
 
-            <h2>💉 Próxima vacunación</h2>
+            <h2>@include('partials.icon', ['name' => 'Vacunaciones']) Próxima vacunación</h2>
 
             @forelse($proximas as $registro)
 
@@ -207,7 +201,7 @@
 
         <section class="panel">
 
-            <h2>⚠️ Vacunación vencida</h2>
+            <h2>@include('partials.icon', ['name' => 'Alerta']) Vacunación vencida</h2>
 
             @forelse($vencidas as $registro)
 
@@ -237,9 +231,7 @@
 
     </div>
 
-    <div class="dashboard-footer">
-        “Tecnología para un campo más productivo.”
-    </div>
+
 
 </div>
 

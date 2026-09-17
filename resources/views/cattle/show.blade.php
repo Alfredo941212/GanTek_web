@@ -16,7 +16,7 @@
 @empty
 <tr><td colspan="5">Sin vacunaciones.</td></tr>
 @endforelse
-</tbody></table>{{ $vacunaciones->links() }}
+</tbody></table>{{ $vacunaciones->links('partials.pagination') }}
 </section>
 <section class="panel table-scroll">
 <h2>Ordeños</h2>
@@ -26,7 +26,7 @@
 @empty
 <tr><td colspan="4">Sin ordeños.</td></tr>
 @endforelse
-</tbody></table>{{ $ordenios->links() }}
+</tbody></table>{{ $ordenios->links('partials.pagination') }}
 </section>
 <a class="btn" href="{{ route('ganado.index') }}">Volver</a>
 @endsection

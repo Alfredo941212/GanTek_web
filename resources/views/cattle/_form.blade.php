@@ -1,4 +1,5 @@
 @csrf
+<p class="form-intro">Los campos con * son obligatorios. Revisa los datos antes de guardar.</p>
 @php($registro = $animal ?? null)
 <div class="form-grid">
     @include('partials.field', [
@@ -50,7 +51,7 @@
         'label' => 'Fecha de ingreso',
         'type' => 'date',
         'required' => true,
-        'value' => $registro?->fecha_ingreso?->format('Y-m-d') ?? '',
+        'value' => $registro?->fecha_ingreso?->format('Y-m-d') ?? today()->toDateString(),
     ])
     @include('partials.field', [
         'name' => 'peso_inicial',
@@ -100,5 +101,6 @@
         'value' => $registro?->observaciones ?? '',
     ])
 </div>
-<button class="btn primary" type="submit">Guardar</button>
+<div class="form-actions"><button class="btn primary" type="submit">{{ $registro ? 'Guardar cambios' : 'Guardar registro' }}</button>
 <a class="btn" href="{{ route('ganado.index') }}">Cancelar</a>
+</div>

@@ -1,4 +1,5 @@
 @csrf
+<p class="form-intro">Los campos con * son obligatorios. Revisa los datos antes de guardar.</p>
 @php($registro = $vacuna ?? null)
 <div class="form-grid">
 @include('partials.field', ['name' => 'nombre', 'label' => 'Nombre', 'type' => 'text', 'required' => true, 'value' => $registro?->nombre ?? ''])
@@ -8,5 +9,6 @@
 @include('partials.field', ['name' => 'intervalo_dias', 'label' => 'Intervalo de referencia (días)', 'type' => 'number', 'required' => false, 'value' => $registro?->intervalo_dias ?? '', 'min' => 1, 'max' => 3650])
 @include('partials.field', ['name' => 'estado', 'label' => 'Estado', 'type' => 'select', 'required' => true, 'value' => $registro?->estado ?? '', 'options' => ['Activo' => 'Activo', 'Inactivo' => 'Inactivo']])
 </div>
-<button class="btn primary" type="submit">Guardar</button>
+<div class="form-actions"><button class="btn primary" type="submit">{{ $registro ? 'Guardar cambios' : 'Guardar registro' }}</button>
 <a class="btn" href="{{ route('vacunas.index') }}">Cancelar</a>
+</div>

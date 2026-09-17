@@ -1,4 +1,5 @@
 @csrf
+<p class="form-intro">Los campos con * son obligatorios. Revisa los datos antes de guardar.</p>
 @php($registro = $veterinario ?? null)
 <div class="form-grid">
 @include('partials.field', ['name' => 'nombre', 'label' => 'Nombre', 'type' => 'text', 'required' => true, 'value' => $registro?->nombre ?? ''])
@@ -9,5 +10,6 @@
 @include('partials.field', ['name' => 'estado', 'label' => 'Estado', 'type' => 'select', 'required' => true, 'value' => $registro?->estado ?? '', 'options' => ['Activo' => 'Activo', 'Inactivo' => 'Inactivo']])
 @include('partials.field', ['name' => 'observaciones', 'label' => 'Observaciones', 'type' => 'textarea', 'required' => false, 'value' => $registro?->observaciones ?? ''])
 </div>
-<button class="btn primary" type="submit">Guardar</button>
+<div class="form-actions"><button class="btn primary" type="submit">{{ $registro ? 'Guardar cambios' : 'Guardar registro' }}</button>
 <a class="btn" href="{{ route('veterinarios.index') }}">Cancelar</a>
+</div>
