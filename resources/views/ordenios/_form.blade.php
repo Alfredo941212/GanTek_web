@@ -1,4 +1,5 @@
 @csrf
+<p class="form-intro">Los campos con * son obligatorios. Revisa los datos antes de guardar.</p>
 @php($registro = $ordenio ?? null)
 <div class="form-grid">
     @if (!$registro)
@@ -23,7 +24,7 @@
             'label' => 'Fecha',
             'type' => 'date',
             'required' => true,
-            'value' => $registro?->fecha?->format('Y-m-d') ?? '',
+            'value' => $registro?->fecha?->format('Y-m-d') ?? today()->toDateString(),
         ])
         @include('partials.field', [
             'name' => 'numero_ordenio',
@@ -81,5 +82,6 @@
         'value' => $registro?->observaciones ?? '',
     ])
 </div>
-<button class="btn primary" type="submit">Guardar</button>
+<div class="form-actions"><button class="btn primary" type="submit">{{ $registro ? 'Guardar cambios' : 'Guardar registro' }}</button>
 <a class="btn" href="{{ route('ordenios.index') }}">Cancelar</a>
+</div>

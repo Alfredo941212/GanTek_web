@@ -1,4 +1,5 @@
 @csrf
+<p class="form-intro">Los campos con * son obligatorios. Revisa los datos antes de guardar.</p>
 @php($registro = $lote ?? null)
 <div class="form-grid">
 @if(!$registro)
@@ -19,5 +20,6 @@
 ])
 @include('partials.field', ['name' => 'estado', 'label' => 'Estado', 'type' => 'select', 'required' => true, 'value' => $registro?->estado ?? '', 'options' => ['Activo' => 'Activo', 'Inactivo' => 'Inactivo']])
 </div>
-<button class="btn primary" type="submit">Guardar</button>
+<div class="form-actions"><button class="btn primary" type="submit">{{ $registro ? 'Guardar cambios' : 'Guardar registro' }}</button>
 <a class="btn" href="{{ route('lotes.index') }}">Cancelar</a>
+</div>
