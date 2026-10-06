@@ -18,6 +18,11 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('throttle:login');
 
+Route::post('/auth/google', [AuthController::class, 'google'])
+    ->middleware('throttle:login');
+
+Route::post('/auth/facebook', [AuthController::class, 'facebook'])
+    ->middleware('throttle:login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
