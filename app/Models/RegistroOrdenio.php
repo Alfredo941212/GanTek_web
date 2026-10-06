@@ -17,7 +17,7 @@ class RegistroOrdenio extends Model
     protected $table = 'registros_ordenio';
 
     /** @var list<string> */
-    protected $fillable = ['ganado_id', 'lote_historico_id', 'fecha','numero_ordenio', 'turno', 'litros', 'observaciones'];
+    protected $fillable = [ 'uuid','ganado_id', 'lote_historico_id', 'fecha','numero_ordenio', 'turno', 'litros', 'observaciones'];
 
     public function setFechaAttribute(\DateTimeInterface|string|null $value): void
     {

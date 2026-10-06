@@ -99,6 +99,16 @@ class RegistroOrdenioRequest extends FormRequest
                 'nullable',
                 Rule::in(['Mañana', 'Tarde']),
             ],
+
+            'uuid' => $this->routeIs('api.*')
+                ? [
+                    'required',
+                    'uuid',
+                    'max:36',
+                ]
+                : [
+                    'missing',
+                ],
         ];
     }
 

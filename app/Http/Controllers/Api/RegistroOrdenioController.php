@@ -34,59 +34,102 @@ class RegistroOrdenioController extends Controller
 
     public function store(RegistroOrdenioRequest $request): JsonResponse
     {
+        $data = $request->validated();
+
+        // ---------------------------------------------------------
+        // EVITAR DUPLICADOS EN LA SINCRONIZACIÓN
+        // ---------------------------------------------------------
+        // Si Flutter ya había enviado este UUID anteriormente,
+        // devolvemos el mismo registro en lugar de crear otro.
+        $existente = RegistroOrdenio::forUser($request->user())
+            ->where('uuid', $data['uuid'])
+            ->with(['ganado', 'loteHistorico.finca'])
+            ->first();
+
+        if ($existente) {
+            return response()->json([
+                'message' => 'El ordeño ya estaba sincronizado.',
+                'data' => $existente,
+            ], 200);
+        }
+
         try {
-            $ordenio = DB::transaction(function () use ($request): RegistroOrdenio {
-                $animal = Ganado::whereKey($request->integer('ganado_id'))
-                    ->lockForUpdate()
-                    ->firstOrFail();
+            $ordenio = DB::transaction(
+                function () use ($request, $data): RegistroOrdenio {
+                    $animal = Ganado::whereKey($request->integer('ganado_id'))
+                        ->lockForUpdate()
+                        ->firstOrFail();
 
-                Gate::authorize('update', $animal);
+                    Gate::authorize('update', $animal);
 
-                $data = $request->validated();
+                    if (
+                        $animal->estado !== 'Activo'
+                        || $animal->sexo !== 'Hembra'
+                        || $data['fecha'] < $animal->fecha_ingreso->toDateString()
+                    ) {
+                        throw ValidationException::withMessages([
+                            'ganado_id' =>
+                            'Selecciona una hembra activa y una fecha desde su ingreso.',
+                        ]);
+                    }
 
-                if (
-                    $animal->estado !== 'Activo'
-                    || $animal->sexo !== 'Hembra'
-                    || $data['fecha'] < $animal->fecha_ingreso->toDateString()
-                ) {
-                    throw ValidationException::withMessages([
-                        'ganado_id' => 'Selecciona una hembra activa y una fecha desde su ingreso.',
-                    ]);
+                    // Si el ordeño es de hoy y Flutter no envió
+                    // lote_historico_id, usamos el lote actual.
+                    if (
+                        $data['fecha'] === today()->toDateString()
+                        && empty($data['lote_historico_id'])
+                    ) {
+                        $data['lote_historico_id'] = $animal->lote_id;
+                    }
+
+                    // Para registros offline de días anteriores,
+                    // Flutter deberá enviar lote_historico_id.
+                    $lote = Lote::forUser($request->user())
+                        ->findOrFail($data['lote_historico_id']);
+
+                    $data['lote_historico_id'] = $lote->id;
+
+                    // Laravel mantiene el número de ordeño como
+                    // dato canónico del servidor.
+                    $ultimoNumero = $animal->registrosOrdenio()
+                        ->whereDate('fecha', $data['fecha'])
+                        ->max('numero_ordenio');
+
+                    $numeroOrdenio = ((int) $ultimoNumero) + 1;
+
+                    if ($numeroOrdenio > 20) {
+                        throw ValidationException::withMessages([
+                            'numero_ordenio' =>
+                            'No se pueden registrar más de 20 ordeños para este animal en la misma fecha.',
+                        ]);
+                    }
+
+                    $data['numero_ordenio'] = $numeroOrdenio;
+
+                    return $animal->registrosOrdenio()->create($data);
                 }
-
-                if (
-                    $data['fecha'] === today()->toDateString()
-                    && empty($data['lote_historico_id'])
-                ) {
-                    $data['lote_historico_id'] = $animal->lote_id;
-                }
-
-                $lote = Lote::forUser($request->user())
-                    ->findOrFail($data['lote_historico_id']);
-
-                $data['lote_historico_id'] = $lote->id;
-
-                // El número de ordeña se asigna automáticamente
-                // según los registros de esta vaca en la fecha seleccionada.
-                $ultimoNumero = $animal->registrosOrdenio()
-                    ->whereDate('fecha', $data['fecha'])
-                    ->max('numero_ordenio');
-
-                $numeroOrdenio = ((int) $ultimoNumero) + 1;
-
-                if ($numeroOrdenio > 20) {
-                    throw ValidationException::withMessages([
-                        'numero_ordenio' => 'No se pueden registrar más de 20 ordeños para este animal en la misma fecha.',
-                    ]);
-                }
-
-                $data['numero_ordenio'] = $numeroOrdenio;
-
-                return $animal->registrosOrdenio()->create($data);
-            });
+            );
         } catch (UniqueConstraintViolationException $exception) {
+
+            // Puede ocurrir que Laravel haya guardado el UUID
+            // mientras otro intento de sincronización estaba ejecutándose.
+            $existente = RegistroOrdenio::forUser($request->user())
+                ->where('uuid', $data['uuid'])
+                ->with(['ganado', 'loteHistorico.finca'])
+                ->first();
+
+            if ($existente) {
+                return response()->json([
+                    'message' => 'El ordeño ya estaba sincronizado.',
+                    'data' => $existente,
+                ], 200);
+            }
+
+            // Si el conflicto no fue por UUID, conservamos
+            // el comportamiento para numero_ordenio.
             throw ValidationException::withMessages([
-                'numero_ordenio' => 'Ya existe este número de ordeño para el animal y la fecha seleccionados.',
+                'numero_ordenio' =>
+                'Ya existe este número de ordeño para el animal y la fecha seleccionados.',
             ]);
         }
 
