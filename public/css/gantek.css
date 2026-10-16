@@ -180,3 +180,345 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
     .dialog-actions .btn { flex:1 }
 }
 @media(prefers-reduced-motion:reduce) { * { transition:none!important } }
+
+/* ========================================
+   ANÁLISIS INTELIGENTE - GANTEK
+======================================== */
+
+.ia-panel {
+    margin-bottom: 24px;
+}
+
+.ia-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.ia-summary > div {
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.ia-summary strong {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.ia-summary span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.ia-results {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.ia-result {
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #94a3b8;
+    border-radius: 8px;
+    padding: 16px;
+    background: #ffffff;
+}
+
+.ia-result-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.ia-result-header span {
+    color: #64748b;
+}
+
+.ia-result p {
+    margin: 6px 0;
+}
+
+.ia-message {
+    margin-top: 12px !important;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.ia-normal {
+    border-left-color: #16a34a;
+}
+
+.ia-atencion {
+    border-left-color: #eab308;
+}
+
+.ia-baja {
+    border-left-color: #f97316;
+}
+
+.ia-critica {
+    border-left-color: #dc2626;
+}
+
+.ia-sin_datos_suficientes {
+    border-left-color: #64748b;
+}
+
+@media (max-width: 700px) {
+    .ia-result-header {
+        flex-direction: column;
+    }
+}
+
+/* ==============================
+   AGENDA INTELIGENTE
+============================== */
+
+.agenda-task {
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #94a3b8;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    background: #ffffff;
+}
+
+.agenda-alta {
+    border-left-color: #dc2626;
+}
+
+.agenda-media {
+    border-left-color: #f59e0b;
+}
+
+.agenda-baja {
+    border-left-color: #16a34a;
+}
+
+.agenda-task-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.agenda-meta {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.agenda-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    font-size: 12px;
+}
+
+.agenda-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.agenda-labels span {
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    font-size: 12px;
+}
+
+.agenda-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.agenda-actions form {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .agenda-task-header {
+        flex-direction: column;
+    }
+
+    .agenda-actions {
+        flex-direction: column;
+    }
+
+    .agenda-actions form,
+    .agenda-actions button {
+        width: 100%;
+    }
+    
+}
+
+/************Agendas vencidas****************/
+.agenda-task:has(.agenda-status) {
+    transition: 0.2s ease;
+}
+
+.agenda-task.vencida {
+    border-left-color: #dc2626;
+    background: #fff7f7;
+}
+
+/* ==============================
+   ANALISIS IA
+============================== */
+
+.ia-animal {
+    margin-top: 18px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #94a3b8;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.ia-normal {
+    border-left-color: #16a34a;
+}
+
+.ia-atencion {
+    border-left-color: #f59e0b;
+}
+
+.ia-anomalia {
+    border-left-color: #dc2626;
+    background: #fffafa;
+}
+
+.ia-sin_datos_suficientes {
+    border-left-color: #64748b;
+}
+
+.ia-animal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.ia-animal-header h3 {
+    margin: 4px 0 0;
+    font-size: 22px;
+}
+
+.ia-state {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ia-metrics {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.ia-metrics > div {
+    padding: 14px;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.ia-metrics span {
+    display: block;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.ia-metrics strong {
+    font-size: 18px;
+}
+
+.ia-interpretation {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.ia-interpretation p {
+    margin: 7px 0 0;
+}
+
+.ia-message {
+    margin-top: 16px;
+}
+
+.ia-small {
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media (max-width: 700px) {
+    .ia-animal-header {
+        flex-direction: column;
+    }
+}
+
+.ia-agenda-action {
+    margin-top: 16px;
+}
+
+/* =========================================
+   PAGINACIÓN - AGENDA GANTEK
+========================================= */
+
+.agenda-pagination {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Contenedor de botones */
+.agenda-pagination nav {
+    width: 100%;
+}
+
+/* Ocultar texto informativo predeterminado */
+.agenda-pagination nav > div:first-child {
+    display: none;
+}
+
+/* Distribución de la paginación */
+.agenda-pagination nav > div:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Botones y números */
+.agenda-pagination a,
+.agenda-pagination span[aria-current="page"] > span {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+/* Efecto al pasar el cursor */
+.agenda-pagination a:hover {
+    background-color: #e8f5e9;
+    color: #166534;
+}
+
+/* Página seleccionada */
+.agenda-pagination [aria-current="page"] > span {
+    background-color: #166534;
+    border-color: #166534;
+    color: white;
+}
