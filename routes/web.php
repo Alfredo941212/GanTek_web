@@ -12,6 +12,8 @@ use App\Http\Controllers\VacunacionController;
 use App\Http\Controllers\VacunaController;
 use App\Http\Controllers\VeterinarioController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TareaController;
+use App\Http\Controllers\AnalisisIAWebController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -46,6 +48,19 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/agenda', [TareaController::class, 'index'])
+        ->name('agenda.index');
+
+    Route::post('/agenda', [TareaController::class, 'store'])
+        ->name('agenda.store');
+
+    Route::patch('/agenda/{tarea}/completar', [TareaController::class, 'completar'])
+        ->name('agenda.completar');
+
+    Route::patch('/agenda/{tarea}/cancelar', [TareaController::class, 'cancelar'])
+        ->name('agenda.cancelar');
+
     Route::resource('fincas', FincaController::class)->parameters(['fincas' => 'finca'])->except('show');
     Route::resource('lotes', LoteController::class)->parameters(['lotes' => 'lote'])->except('show');
     Route::resource('ganado', GanadoController::class)->parameters(['ganado' => 'ganado']);
@@ -55,4 +70,14 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('ordenios', RegistroOrdenioController::class)->parameters(['ordenios' => 'ordenio'])->except('show');
     Route::get('/produccion', [ReportController::class, 'index'])->name('produccion.index');
     Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
+
+    Route::get(
+        '/analisis-ia',
+        [AnalisisIAWebController::class, 'index']
+    )->name('ia.index');
+
+    Route::post(
+        '/analisis-ia/{ganado}/agregar-agenda',
+        [AnalisisIAWebController::class, 'agregarAgenda']
+    )->name('ia.agregar-agenda');
 });

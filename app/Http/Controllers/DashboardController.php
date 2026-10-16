@@ -7,12 +7,14 @@ use App\Services\AlertaService;
 use App\Services\ProduccionService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Services\AnalisisProduccionIAService;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, ProduccionService $produccion, AlertaService $alertas): View
+    public function index(Request $request, ProduccionService $produccion, AlertaService $alertas,  AnalisisProduccionIAService $analisisIA): View
     {
         $user = $request->user();
+        $analisisProduccionIA = $analisisIA->analizarProduccion($user);
         $resumen = $produccion->resumen($user, ['desde' => today()->subDays(7)->toDateString(), 'hasta' => today()->subDay()->toDateString()]);
 
         return view('dashboard', [
@@ -25,6 +27,8 @@ class DashboardController extends Controller
             'alertasLotes' => $alertas->produccionLotes($user),
             'proximas' => $alertas->proximas($user)->with(['ganado', 'vacuna', 'veterinario'])->orderBy('proxima_aplicacion')->get(),
             'vencidas' => $alertas->vencidas($user)->with(['ganado', 'vacuna'])->orderBy('proxima_aplicacion')->get(),
+
+            'analisisProduccionIA' => $analisisProduccionIA,
         ]);
     }
 }

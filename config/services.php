@@ -47,4 +47,8 @@ return [
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
 
+    'python' => [
+        'binary' => env('PYTHON_BINARY', 'python'),
+    ],
+
 ];
