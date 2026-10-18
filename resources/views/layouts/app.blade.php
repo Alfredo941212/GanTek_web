@@ -43,7 +43,45 @@
     <div class="workspace">
         <header class="topbar">
             <div><button type="button" class="menu-toggle" aria-controls="navigation" aria-expanded="false" aria-label="Abrir menú">☰</button><span class="topbar-label">GAN TEK <span> / </span> Tu espacio ganadero</span></div>
-            <div class="topbar-actions"><a class="notice-link" href="{{ route('dashboard') }}#avisos">Avisos</a><span class="user-chip"><span class="avatar" aria-hidden="true">{{ mb_substr(auth()->user()->name, 0, 1) }}</span><span>{{ auth()->user()->name }}<small>{{ auth()->user()->puede_gestionar_catalogos ? 'Administración de catálogos' : 'Ganadero' }}</small></span></span></div>
+                    
+            <div class="topbar-actions">
+                <a class="notice-link" href="{{ route('dashboard') }}#avisos">
+                    Avisos
+                </a>
+
+                <a href="{{ route('profile.edit') }}"
+                class="user-chip profile-link"
+                title="Ver y editar mi perfil"
+                @if(request()->routeIs('profile.*')) aria-current="page" @endif>
+
+                    
+                    <span class="avatar" aria-hidden="true">
+                        @if(auth()->user()->avatar)
+                            <img
+                                src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar) }}"
+                                alt=""
+                                style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+                            >
+                        @else
+                            {{ mb_substr(auth()->user()->name, 0, 1) }}
+                        @endif
+                    </span>
+
+
+                    <span>
+                        {{ auth()->user()->name }}
+
+                        <small>
+                            {{ auth()->user()->puede_gestionar_catalogos
+                                ? 'Administración de catálogos'
+                                : 'Ganadero' }}
+                        </small>
+                    </span>
+
+                    <span aria-hidden="true">⌄</span>
+                </a>
+            </div>
+
         </header>
         <main class="content" id="contenido" tabindex="-1">
             <section class="page-heading">
