@@ -12,17 +12,21 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /** @var array<string, mixed> */
-    protected $attributes = ['puede_gestionar_catalogos' => false];
+    /**
+     * Valores predeterminados del usuario.
+     */
+    protected $attributes = [
+        'puede_gestionar_catalogos' => false,
+    ];
 
     /**
-     * Los atributos que son asignables en masa.
-     *
-     * @var array<int, string>
+     * Campos que pueden asignarse mediante Eloquent.
      */
     protected $fillable = [
         'name',
+        'last_name',
         'email',
+        'phone',
         'password',
         'google_id',
         'facebook_id',
@@ -30,9 +34,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Los atributos que deben estar ocultos para la serialización.
-     *
-     * @var array<int, string>
+     * Campos ocultos al serializar el usuario.
      */
     protected $hidden = [
         'password',
@@ -40,9 +42,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Los atributos que deben ser casteados.
-     *
-     * @var array<string, string>
+     * Conversión de tipos.
      */
     protected function casts(): array
     {
@@ -53,6 +53,9 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Relación del usuario con sus fincas.
+     */
     public function fincas(): HasMany
     {
         return $this->hasMany(Finca::class);
