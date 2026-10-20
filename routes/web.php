@@ -14,6 +14,7 @@ use App\Http\Controllers\VeterinarioController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\AnalisisIAWebController;
+use App\Http\Controllers\OrdenioWebController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -43,6 +44,12 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/restablecer-contrasena', [AuthController::class, 'resetPassword'])
         ->middleware('throttle:5,1')
         ->name('password.update');
+
+    Route::get('/ordenios', [OrdenioWebController::class, 'index'])
+        ->name('ordenios.index');
+    
+    Route::get('/jornadas-ordenio', [OrdenioWebController::class, 'index'])
+    ->name('jornadas-ordenio.index');
 });
 
 Route::middleware('auth')->group(function (): void {

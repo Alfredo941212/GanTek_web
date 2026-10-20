@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ReporteProduccionController;
 use App\Http\Controllers\Api\AnalisisIAController;
 use App\Http\Controllers\Api\TareaController;
+use App\Http\Controllers\Api\GrupoOrdenioController;
+use App\Http\Controllers\Api\SesionOrdenioController;
 
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
@@ -83,4 +85,46 @@ Route::middleware('auth:sanctum')->group(function () {
         '/ia/{ganado}/agregar-agenda',
         [AnalisisIAController::class, 'agregarAgenda']
     )->name('api.ia.agregar-agenda');
+
+    Route::apiResource(
+        'grupos-ordenio',
+        GrupoOrdenioController::class
+    )->parameters([
+        'grupos-ordenio' => 'grupoOrdenio',
+    ]);
+
+    Route::post(
+        'grupos-ordenio/{grupoOrdenio}/ganado',
+        [GrupoOrdenioController::class, 'agregarGanado']
+    );
+
+    Route::delete(
+        'grupos-ordenio/{grupoOrdenio}/ganado/{ganado}',
+        [GrupoOrdenioController::class, 'quitarGanado']
+    );
+
+    Route::get(
+        'sesiones-ordenio/hoy',
+        [SesionOrdenioController::class, 'hoy']
+    );
+
+    Route::post(
+        'sesiones-ordenio/iniciar',
+        [SesionOrdenioController::class, 'iniciarJornada']
+    );
+
+    Route::patch(
+        'sesiones-ordenio/{sesionOrdenio}/finalizar',
+        [SesionOrdenioController::class, 'finalizar']
+    );
+
+    Route::get(
+        'sesiones-ordenio/historial',
+        [SesionOrdenioController::class, 'historial']
+    );
+
+    Route::post(
+        'sesiones-ordenio/importar',
+        [SesionOrdenioController::class, 'importar']
+    );
 });
