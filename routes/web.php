@@ -14,6 +14,7 @@ use App\Http\Controllers\VacunaController;
 use App\Http\Controllers\VeterinarioController;
 use App\Http\Controllers\TareaController;
 use App\Http\Controllers\AnalisisIAWebController;
+use App\Http\Controllers\OrdenioWebController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,12 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/restablecer-contrasena', [AuthController::class, 'resetPassword'])
         ->middleware('throttle:5,1')
         ->name('password.update');
+
+    Route::get('/ordenios', [OrdenioWebController::class, 'index'])
+        ->name('ordenios.index');
+    
+    Route::get('/jornadas-ordenio', [OrdenioWebController::class, 'index'])
+    ->name('jornadas-ordenio.index');
 });
 
 // Rutas para usuarios autenticados

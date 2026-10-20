@@ -1,34 +1,296 @@
 @extends('layouts.app')
-@section('title', 'Registros de ordeño | GanTek')
-@section('heading', 'Registros de ordeño')
-@section('content')
-<div class="toolbar">
-<div></div>
-@can('create', \App\Models\RegistroOrdenio::class)
-    <a class="btn primary" href="{{ route('ordenios.create') }}">+ Registrar ordeño</a>
-@endcan
-</div>
-<div class="panel table-scroll" tabindex="0" role="region" aria-label="Tabla de registros">
-<p class="table-guide">Desliza la tabla hacia los lados para ver todos los datos y las acciones.</p>
-<table>
-    <thead><tr><th>Animal</th><th>Fecha</th><th>Turno</th><th>Litros</th><th>Finca / lote histórico</th><th>Acciones</th></tr></thead>
-    <tbody>
-    @forelse($ordenios as $item)
-        <tr><td>{{ $item->ganado->arete_siniiga }}</td><td>{{ $item->fecha->format('d/m/Y') }}</td><td>{{ $item->turno }}</td><td>{{ $item->litros }}</td><td>{{ $item->loteHistorico->finca->nombre.' / '.$item->loteHistorico->nombre }}</td>
-            <td><div class="actions">
 
-                <a href="{{ route('ordenios.edit', $item) }}">Editar</a>
-                <form method="POST" action="{{ route('ordenios.destroy', $item) }}" data-confirm-title="Eliminar ordeño" data-confirm-name="{{ $item->ganado->arete_siniiga }} · {{ $item->fecha->format('d/m/Y') }} · #{{ $item->numero_ordenio }}" data-confirm-message="El registro se eliminará y cambiarán los indicadores de producción. Esta acción no se puede deshacer." data-confirm-label="Eliminar">
-                    @csrf @method('DELETE')
-                    <button type="submit">Eliminar</button>
-                </form>
-            </div></td>
-        </tr>
-    @empty
-        <tr><td colspan="6">Sin registros.</td></tr>
-    @endforelse
-    </tbody>
-</table>
+@section('title', 'Jornadas de ordeña | GanTek')
+
+@section('heading', 'Jornadas de ordeña')
+@section('subheading', 'Consulta la producción registrada desde la aplicación móvil.')
+
+@section('content')
+
+<div class="dashboard-page">
+
+    {{-- ========================= --}}
+    {{-- JORNADA DE HOY --}}
+    {{-- ========================= --}}
+
+    <div class="section-header">
+        <div>
+            <h2>Jornada de hoy</h2>
+            <p>
+                Estado actual de los grupos de ordeña.
+            </p>
+        </div>
+    </div>
+
+    @if ($sesionesHoy->isEmpty())
+
+        <div class="empty-state">
+            <h3>No hay jornada registrada hoy</h3>
+            <p>
+                La jornada debe iniciarse desde la aplicación móvil.
+            </p>
+        </div>
+
+    @else
+
+        <div class="cards-grid">
+
+            @foreach ($sesionesHoy as $sesion)
+
+                @php
+                    $promedio = null;
+
+                    if (
+                        $sesion->litros_totales !== null &&
+                        $sesion->cantidad_vacas > 0
+                    ) {
+                        $promedio =
+                            $sesion->litros_totales /
+                            $sesion->cantidad_vacas;
+                    }
+                @endphp
+
+                <div class="ordenio-card">
+
+                    <div class="ordenio-card-header">
+
+                        <div>
+                            <h3>
+                                {{ $sesion->grupo?->nombre ?? 'Grupo' }}
+                            </h3>
+
+                            <small>
+                                Orden:
+                                {{ $sesion->grupo?->orden ?? '-' }}
+                            </small>
+                        </div>
+
+                        <span
+                            class="status-badge
+                            status-{{ $sesion->estado }}"
+                        >
+                            {{ strtoupper(
+                                str_replace(
+                                    '_',
+                                    ' ',
+                                    $sesion->estado
+                                )
+                            ) }}
+                        </span>
+
+                    </div>
+
+                    <div class="ordenio-info">
+
+                        <div>
+                            <span>Vacas</span>
+                            <strong>
+                                {{ $sesion->cantidad_vacas }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Producción</span>
+                            <strong>
+                                @if ($sesion->litros_totales !== null)
+                                    {{ number_format(
+                                        $sesion->litros_totales,
+                                        2
+                                    ) }} L
+                                @else
+                                    -
+                                @endif
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Duración</span>
+                            <strong>
+                                @if ($sesion->duracion_minutos !== null)
+                                    {{ $sesion->duracion_minutos }} min
+                                @else
+                                    -
+                                @endif
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Promedio por vaca</span>
+                            <strong>
+                                @if ($promedio !== null)
+                                    {{ number_format(
+                                        $promedio,
+                                        2
+                                    ) }} L
+                                @else
+                                    -
+                                @endif
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="ordenio-times">
+
+                        <span>
+                            Inicio:
+                            @if ($sesion->hora_inicio)
+                                {{ $sesion->hora_inicio->format('H:i') }}
+                            @else
+                                -
+                            @endif
+                        </span>
+
+                        <span>
+                            Fin:
+                            @if ($sesion->hora_fin)
+                                {{ $sesion->hora_fin->format('H:i') }}
+                            @else
+                                -
+                            @endif
+                        </span>
+
+                    </div>
+
+                    @if ($sesion->observaciones)
+
+                        <div class="ordenio-observations">
+                            <strong>Observaciones:</strong>
+
+                            <p>
+                                {{ $sesion->observaciones }}
+                            </p>
+                        </div>
+
+                    @endif
+
+                </div>
+
+            @endforeach
+
+        </div>
+
+    @endif
+
+
+    {{-- ========================= --}}
+    {{-- HISTORIAL --}}
+    {{-- ========================= --}}
+
+    <div class="section-header history-header">
+
+        <div>
+            <h2>Historial reciente</h2>
+            <p>
+                Últimas jornadas de ordeña finalizadas.
+            </p>
+        </div>
+
+    </div>
+
+    @if ($historial->isEmpty())
+
+        <div class="empty-state">
+
+            <h3>Sin historial disponible</h3>
+
+            <p>
+                Cuando se finalicen jornadas aparecerán aquí.
+            </p>
+
+        </div>
+
+    @else
+
+        <div class="table-container">
+
+            <table class="ordenio-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Grupo</th>
+                        <th>Vacas</th>
+                        <th>Producción</th>
+                        <th>Duración</th>
+                        <th>Promedio</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach ($historial as $sesion)
+
+                        @php
+                            $promedio = null;
+
+                            if (
+                                $sesion->litros_totales !== null &&
+                                $sesion->cantidad_vacas > 0
+                            ) {
+                                $promedio =
+                                    $sesion->litros_totales /
+                                    $sesion->cantidad_vacas;
+                            }
+                        @endphp
+
+                        <tr>
+
+                            <td>
+                                {{ $sesion->fecha->format('d/m/Y') }}
+                            </td>
+
+                            <td>
+                                {{ $sesion->grupo?->nombre ?? 'Grupo' }}
+                            </td>
+
+                            <td>
+                                {{ $sesion->cantidad_vacas }}
+                            </td>
+
+                            <td>
+                                {{ number_format(
+                                    $sesion->litros_totales,
+                                    2
+                                ) }}
+                                L
+                            </td>
+
+                            <td>
+                                {{ $sesion->duracion_minutos ?? '-' }}
+                                min
+                            </td>
+
+                            <td>
+                                @if ($promedio !== null)
+
+                                    {{ number_format(
+                                        $promedio,
+                                        2
+                                    ) }}
+                                    L/vaca
+
+                                @else
+
+                                    -
+
+                                @endif
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    @endif
+
 </div>
-{{ $ordenios->links('partials.pagination') }}
+
 @endsection

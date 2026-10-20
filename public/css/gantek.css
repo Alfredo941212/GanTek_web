@@ -523,10 +523,269 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
     color: white;
 }
 
+/* =========================================================
+   JORNADAS DE ORDEÑA
+   ========================================================= */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.section-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 0.92rem;
+}
+
+.history-header {
+    margin-top: 35px;
+}
+
+
+/* =========================================================
+   TARJETAS DE GRUPOS
+   ========================================================= */
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+    gap: 18px;
+}
+
+.ordenio-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+    transition: 0.2s ease;
+}
+
+.ordenio-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.ordenio-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.ordenio-card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.ordenio-card-header small {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-en_produccion {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-en_espera {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-finalizado {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+
+/* =========================================================
+   DATOS DE PRODUCCIÓN
+   ========================================================= */
+
+.ordenio-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.ordenio-info > div {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.ordenio-info span {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+.ordenio-info strong {
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.ordenio-times {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.ordenio-observations {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.88rem;
+}
+
+.ordenio-observations p {
+    margin: 5px 0 0;
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+   ========================================================= */
+
+.empty-state {
+    padding: 35px 20px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 14px;
+}
+
+.empty-state h3 {
+    margin: 0 0 7px;
+    color: #334155;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   TABLA DE HISTORIAL
+   ========================================================= */
+
+.table-container {
+    overflow-x: auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.ordenio-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ordenio-table thead {
+    background: #f8fafc;
+}
+
+.ordenio-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #475569;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ordenio-table td {
+    padding: 14px 16px;
+    color: #334155;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.ordenio-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ordenio-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ordenio-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .ordenio-card-header {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 450px) {
+
+    .ordenio-info {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
 
 /* =========================================
    GANTEK - PERFIL DE USUARIO
-========================================= */
 
 .profile-page {
     max-width: 1000px;

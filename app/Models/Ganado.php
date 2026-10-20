@@ -46,7 +46,7 @@ class Ganado extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['fecha_nacimiento' => 'date', 'fecha_ingreso' => 'date', 'peso_inicial' => 'decimal:2','produccion_minima_diaria' => 'decimal:2'];
+        return ['fecha_nacimiento' => 'date', 'fecha_ingreso' => 'date', 'peso_inicial' => 'decimal:2', 'produccion_minima_diaria' => 'decimal:2'];
     }
 
     /** @param Builder<Ganado> $query
@@ -70,5 +70,25 @@ class Ganado extends Model
     public function registrosOrdenio(): HasMany
     {
         return $this->hasMany(RegistroOrdenio::class, 'ganado_id');
+    }
+
+    public function gruposOrdenio()
+    {
+        return $this->belongsToMany(
+            GrupoOrdenio::class,
+            'grupo_ordenio_ganado',
+            'ganado_id',
+            'grupo_ordenio_id'
+        )->withTimestamps();
+    }
+
+    public function sesionesOrdenio()
+    {
+        return $this->belongsToMany(
+            SesionOrdenio::class,
+            'sesion_ordenio_ganado',
+            'ganado_id',
+            'sesion_ordenio_id'
+        )->withTimestamps();
     }
 }

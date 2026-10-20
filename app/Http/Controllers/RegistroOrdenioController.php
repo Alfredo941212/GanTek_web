@@ -13,12 +13,56 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Models\SesionOrdenio;
 
 class RegistroOrdenioController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('ordenios.index', ['ordenios' => RegistroOrdenio::forUser($request->user())->with(['ganado', 'loteHistorico.finca'])->latest('fecha')->orderBy('numero_ordenio')->paginate(20)]);
+        $user = $request->user();
+
+        // Sistema anterior de ordeños.
+        // Lo conservamos por ahora para no romper funcionalidades existentes.
+        $ordenios = RegistroOrdenio::forUser($user)
+            ->with([
+                'ganado',
+                'loteHistorico.finca',
+            ])
+            ->latest('fecha')
+            ->orderBy('numero_ordenio')
+            ->paginate(20);
+
+        // Jornada de ordeña del día.
+        $sesionesHoy = SesionOrdenio::query()
+            ->where('user_id', $user->id)
+            ->whereDate('fecha', now()->toDateString())
+            ->with([
+                'grupo:id,nombre,orden',
+            ])
+            ->get()
+            ->sortBy(
+                fn(SesionOrdenio $sesion) =>
+                $sesion->grupo?->orden ?? 999
+            )
+            ->values();
+
+        // Historial reciente del nuevo sistema por grupos.
+        $historial = SesionOrdenio::query()
+            ->where('user_id', $user->id)
+            ->where('estado', 'finalizado')
+            ->with([
+                'grupo:id,nombre,orden',
+            ])
+            ->orderByDesc('fecha')
+            ->orderByDesc('id')
+            ->limit(20)
+            ->get();
+
+        return view('ordenios.index', [
+            'ordenios' => $ordenios,
+            'sesionesHoy' => $sesionesHoy,
+            'historial' => $historial,
+        ]);
     }
 
     public function create(Request $request): View
