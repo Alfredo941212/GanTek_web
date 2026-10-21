@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\AnalisisIAController;
 use App\Http\Controllers\Api\TareaController;
 use App\Http\Controllers\Api\GrupoOrdenioController;
 use App\Http\Controllers\Api\SesionOrdenioController;
+use App\Http\Controllers\Api\AnalisisProduccionGrupoController;
 
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
@@ -59,12 +60,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reportes/produccion', [ReporteProduccionController::class, 'index'])
         ->name('api.reportes.produccion');
 
-    Route::get('/ia/produccion', [AnalisisIAController::class, 'produccion'])
-        ->name('api.ia.produccion');
-
-    Route::get('/ia/agenda', [AnalisisIAController::class, 'agenda'])
-        ->name('api.ia.agenda');
-
     Route::apiResource('tareas', TareaController::class)
         ->except(['destroy'])
         ->names('api.tareas');
@@ -75,16 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/tareas/{tarea}/cancelar', [TareaController::class, 'cancelar'])
         ->name('api.tareas.cancelar');
 
-    Route::get(
-        '/ia/prediccion-produccion',
-        [AnalisisIAController::class, 'prediccionProduccion']
-    )->name('api.ia.prediccion-produccion');
-
-
-    Route::post(
-        '/ia/{ganado}/agregar-agenda',
-        [AnalisisIAController::class, 'agregarAgenda']
-    )->name('api.ia.agregar-agenda');
 
     Route::apiResource(
         'grupos-ordenio',
@@ -126,5 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post(
         'sesiones-ordenio/importar',
         [SesionOrdenioController::class, 'importar']
+    );
+
+    Route::get(
+        '/ia/produccion-grupos',
+        [AnalisisProduccionGrupoController::class, 'analizar']
     );
 });

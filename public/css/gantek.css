@@ -783,301 +783,120 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
         flex-direction: column;
     }
 }
-
 /* =========================================
    GANTEK - PERFIL DE USUARIO
+   ========================================= */
 
-.profile-page {
-    max-width: 1000px;
-    margin: 0 auto 40px;
-}
+/* TODO: aquí dejas TODO tu bloque actual de perfil,
+   desde .profile-page hasta .profile-photo-help */
 
-.profile-card {
-    background: #fff;
-    border: 1px solid #e3ebe6;
-    border-radius: 18px;
-    padding: 32px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-}
 
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    padding-bottom: 26px;
-    border-bottom: 1px solid #e5ebe7;
-    margin-bottom: 28px;
-}
+/* =========================================================
+   IA DE PRODUCCIÓN
+   ========================================================= */
 
-.profile-avatar {
-    width: 90px;
-    height: 90px;
-    min-width: 90px;
-    border-radius: 50%;
-    background: #e1f3e7;
-    color: #17633e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 36px;
-    font-weight: 700;
-}
-
-.profile-header h2 {
-    margin: 0 0 6px;
-    color: #163e30;
-    font-size: 24px;
-}
-
-.profile-header p {
-    margin: 0 0 10px;
-    color: #64766c;
-    overflow-wrap: anywhere;
-}
-
-.profile-status {
-    display: inline-block;
-    background: #e0f5e8;
-    color: #177245;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.profile-section-title {
-    margin-bottom: 24px;
-}
-
-.profile-section-title h3,
-.profile-security h3 {
-    color: #173f31;
-    font-size: 19px;
-    margin: 0 0 7px;
-}
-
-.profile-section-title p,
-.profile-security p {
-    color: #64766c;
-    margin: 0;
-    line-height: 1.6;
-}
-
-.profile-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-}
-
-.profile-field {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    min-width: 0;
-}
-
-.profile-field label {
-    color: #284d3b;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.profile-field input {
+.ia-chart-container {
+    position: relative;
     width: 100%;
-    min-width: 0;
-    padding: 13px 15px;
-    border: 1px solid #cddbd1;
-    border-radius: 9px;
-    background: #fff;
-    color: #243e31;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color .2s, box-shadow .2s;
+    min-height: 360px;
+    margin-top: 20px;
 }
 
-.profile-field input:focus {
-    outline: none;
-    border-color: #278657;
-    box-shadow: 0 0 0 3px rgba(39, 134, 87, .12);
+.ia-chart-container canvas {
+    width: 100% !important;
+    height: 360px !important;
 }
 
-.profile-field input[readonly] {
-    background: #f2f5f3;
-    color: #68786e;
-    cursor: default;
-}
-
-.profile-field small {
-    font-size: 12px;
-    color: #748278;
-}
-
-.profile-field .profile-error {
-    color: #c0392b;
-}
-
-.profile-security {
-    background: #f3f8f4;
-    border: 1px solid #e0ece3;
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 30px;
-}
-
-.profile-actions {
+.ia-group-header {
     display: flex;
-    justify-content: flex-end;
     align-items: center;
-    gap: 14px;
-    margin-top: 30px;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
 }
 
-.profile-save,
-.profile-cancel {
+.ia-group-header h3 {
+    margin: 0 0 4px 0;
+}
+
+.ia-group-header small {
+    color: #64748b;
+}
+
+.ia-status {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 22px;
-    border-radius: 9px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    box-sizing: border-box;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-.profile-save {
-    background: #176b45;
-    color: #fff;
-    border: 1px solid #176b45;
+.ia-status-rojo_oscuro {
+    background: #7f1d1d;
+    color: #ffffff;
 }
 
-.profile-save:hover {
-    background: #105434;
+.ia-status-rojo {
+    background: #dc2626;
+    color: #ffffff;
 }
 
-.profile-cancel {
-    background: #fff;
-    color: #53665a;
-    border: 1px solid #cbd8ce;
+.ia-status-amarillo {
+    background: #facc15;
+    color: #422006;
 }
 
-.profile-cancel:hover {
-    background: #f1f5f2;
+.ia-status-verde {
+    background: #16a34a;
+    color: #ffffff;
 }
 
-.profile-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
+.ia-status-morado {
+    background: #9333ea;
+    color: #ffffff;
 }
 
-.profile-link:hover {
-    opacity: .85;
+.ia-message {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border-left: 4px solid #2563eb;
+    color: #334155;
+    line-height: 1.5;
 }
 
-.profile-link:focus-visible {
-    outline: 2px solid #278657;
-    outline-offset: 4px;
+.dashboard-page .card {
+    margin-bottom: 22px;
 }
 
-/* Adaptación para teléfonos */
-@media (max-width: 700px) {
-    .profile-card {
-        padding: 20px;
+.dashboard-page .card > h3 {
+    margin-bottom: 8px;
+}
+
+.dashboard-page .card > p {
+    margin-top: 0;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .ia-chart-container {
+        min-height: 280px;
     }
 
-    .profile-header {
+    .ia-chart-container canvas {
+        height: 280px !important;
+    }
+
+    .ia-group-header {
+        align-items: flex-start;
         flex-direction: column;
-        text-align: center;
     }
 
-    .profile-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
+    .ia-status {
+        align-self: flex-start;
     }
-
-    .profile-actions {
-        flex-direction: column-reverse;
-    }
-
-    .profile-save,
-    .profile-cancel {
-        width: 100%;
-    }
-}
-
-
-/* FOTO DE PERFIL GANTEK */
-
-.profile-photo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.profile-photo-label {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: block;
-}
-
-.profile-photo,
-.profile-photo-initial {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.profile-photo-initial {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e1f3e7;
-    color: #17633e;
-    font-size: 38px;
-    font-weight: bold;
-}
-
-.profile-photo-edit {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: #176b45;
-    color: white;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid white;
-    font-size: 14px;
-}
-
-.profile-file-input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    overflow: hidden;
-}
-
-.profile-photo-label:hover {
-    opacity: .85;
-}
-
-.profile-photo-label:focus-within {
-    outline: 2px solid #176b45;
-}
-
-.profile-photo-help {
-    color: #64766c;
-    font-size: 11px;
-    text-align: center;
 }
