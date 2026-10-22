@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Finca extends Model
 {
@@ -17,7 +18,7 @@ class Finca extends Model
     protected $table = 'fincas';
 
     /** @var list<string> */
-    protected $fillable = ['nombre', 'municipio', 'localidad', 'estado', 'superficie', 'observaciones'];
+    protected $fillable = ['nombre', 'municipio', 'localidad', 'estado', 'estado_id', 'municipio_id', 'localidad_id', 'superficie', 'observaciones'];
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -36,6 +37,16 @@ class Finca extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /** @return array{estado: ?string, municipio: ?string, localidad: ?string} */
+    public function clavesUbicacion(): array
+    {
+        return [
+            'estado' => DB::table('estados')->where('id', $this->estado_id)->value('clave_inegi'),
+            'municipio' => DB::table('municipios')->where('id', $this->municipio_id)->value('clave_inegi'),
+            'localidad' => DB::table('localidades')->where('id', $this->localidad_id)->value('clave_inegi'),
+        ];
     }
 
     public function lotes(): HasMany

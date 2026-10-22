@@ -1,27 +1,33 @@
 <?php
 
+use App\Http\Controllers\Api\AnalisisIAController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\FincaController;
+use App\Http\Controllers\Api\GanadoController;
+use App\Http\Controllers\Api\GrupoOrdenioController;
+use App\Http\Controllers\Api\LoteController;
+use App\Http\Controllers\Api\RegistroOrdenioController;
+use App\Http\Controllers\Api\ReporteProduccionController;
+use App\Http\Controllers\Api\SesionOrdenioController;
+use App\Http\Controllers\Api\TareaController;
+use App\Http\Controllers\Api\UbicacionController;
+use App\Http\Controllers\Api\VacunacionController;
+use App\Http\Controllers\Api\VacunaController;
+use App\Http\Controllers\Api\VeterinarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\FincaController;
-use App\Http\Controllers\Api\LoteController;
-use App\Http\Controllers\Api\GanadoController;
-use App\Http\Controllers\Api\RegistroOrdenioController;
-use App\Http\Controllers\Api\VeterinarioController;
-use App\Http\Controllers\Api\VacunaController;
-use App\Http\Controllers\Api\VacunacionController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\ReporteProduccionController;
-use App\Http\Controllers\Api\AnalisisIAController;
-use App\Http\Controllers\Api\TareaController;
-use App\Http\Controllers\Api\GrupoOrdenioController;
-use App\Http\Controllers\Api\SesionOrdenioController;
+
+Route::prefix('ubicaciones')->name('api.ubicaciones.')->middleware('throttle:60,1')->group(function (): void {
+    Route::get('estados', [UbicacionController::class, 'estados'])->name('estados');
+    Route::get('estados/{clave}/municipios', [UbicacionController::class, 'municipios'])->where('clave', '[0-9]{2}')->name('municipios');
+    Route::get('municipios/{clave}/localidades', [UbicacionController::class, 'localidades'])->where('clave', '[0-9]{5}')->name('localidades');
+});
 
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
 Route::post('/register', [AuthController::class, 'register'])
     ->middleware('throttle:login');
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -79,7 +85,6 @@ Route::middleware('auth:sanctum')->group(function () {
         '/ia/prediccion-produccion',
         [AnalisisIAController::class, 'prediccionProduccion']
     )->name('api.ia.prediccion-produccion');
-
 
     Route::post(
         '/ia/{ganado}/agregar-agenda',
