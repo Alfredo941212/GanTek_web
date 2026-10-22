@@ -16,7 +16,7 @@
             <small>En tu hato</small>
         </div>
 
-        <div class="stat-card">
+        <!--<div class="stat-card">
             <span> Producción de hoy</span>
             <strong>{{ number_format($litrosHoy, 2) }} L</strong>
             <small>Litros de leche</small>
@@ -29,18 +29,14 @@
                 {{ $diasPromedio }} días con registros
             </small>
         </div>
-
+-->
         <div class="stat-card">
             <span> Vacunas próximas</span>
             <strong>{{ $proximas->count() }}</strong>
             <small>En los próximos 30 días</small>
         </div>
 
-        <div class="stat-card">
-            <span>@include('partials.icon', ['name' => 'Alerta']) Alertas de producción</span>
-            <strong>{{ $alertasProduccion->count() }}</strong>
-            <small>{{ $alertasProduccion->isEmpty() ? 'Sin alertas detectadas' : 'Animales por revisar' }}</small>
-        </div>
+
 
         <div class="stat-card">
             <span> Vacunas vencidas</span>
@@ -50,155 +46,7 @@
 
     </div>
 
-    <div class="toolbar">
 
-        <a
-            class="btn primary"
-            href="{{ route('ordenios.create') }}"
-        >
-             Registrar ordeño
-        </a>
-
-        <a
-            class="btn"
-            href="{{ route('produccion.index') }}"
-        >
-             Consultar producción
-        </a>
-
-    </div>
-
-    <section class="panel ia-panel">
-
-    <h2>Análisis inteligente de producción</h2>
-
-    <p>
-        GanTek analiza los registros recientes de producción para detectar
-        cambios, tendencias y posibles disminuciones en el rendimiento.
-    </p>
-
-    <div class="ia-summary">
-
-        <div>
-            <strong>{{ $analisisProduccionIA['total_animales_analizados'] }}</strong>
-            <span>Animales analizados</span>
-        </div>
-
-        <div>
-            <strong>{{ $analisisProduccionIA['resumen']['normal'] ?? 0 }}</strong>
-            <span>Producción normal</span>
-        </div>
-
-        <div>
-            <strong>{{ $analisisProduccionIA['resumen']['atencion'] ?? 0 }}</strong>
-            <span>Requieren atención</span>
-        </div>
-
-        <div>
-            <strong>{{ $analisisProduccionIA['resumen']['baja'] ?? 0 }}</strong>
-            <span>Producción baja</span>
-        </div>
-
-        <div>
-            <strong>{{ $analisisProduccionIA['resumen']['critica'] ?? 0 }}</strong>
-            <span>Producción crítica</span>
-        </div>
-
-        <div>
-            <strong>{{ $analisisProduccionIA['resumen']['sin_datos_suficientes'] ?? 0 }}</strong>
-            <span>Sin datos suficientes</span>
-        </div>
-
-    </div>
-<!-- aquí estará todo el módulo de IA -->
-    <div class="ia-results">
-
-        @forelse($analisisProduccionIA['animales'] as $analisis)
-
-            <div class="ia-result ia-{{ $analisis['estado'] }}">
-
-                <div class="ia-result-header">
-
-                    <strong>
-                        Arete {{ $analisis['arete'] }}
-                    </strong>
-
-                    <span>
-                        {{ $analisis['lote'] }}
-                    </span>
-
-                </div>
-
-                <p>
-                    <strong>Promedio reciente:</strong>
-                    {{ number_format($analisis['promedio_reciente'], 2) }} L
-                </p>
-
-                <p>
-                    <strong>Tendencia:</strong>
-
-                    @switch($analisis['tendencia'])
-
-                        @case('ascendente')
-                            Ascendente
-                            @break
-
-                        @case('descendente')
-                            Descendente
-                            @break
-
-                        @case('estable')
-                            Estable
-                            @break
-
-                        @default
-                            Sin datos suficientes
-
-                    @endswitch
-                </p>
-
-                <p>
-                    <strong>Estado:</strong>
-
-                    @switch($analisis['estado'])
-
-                        @case('normal')
-                            Normal
-                            @break
-
-                        @case('atencion')
-                            Requiere atención
-                            @break
-
-                        @case('baja')
-                            Producción baja
-                            @break
-
-                        @case('critica')
-                            Crítico
-                            @break
-
-                        @default
-                            Sin datos suficientes
-
-                    @endswitch
-                </p>
-
-                <p class="ia-message">
-                    {{ $analisis['mensaje'] }}
-                </p>
-
-            </div>
-
-        @empty
-
-            <div class="dashboard-message">
-                Todavía no existen registros suficientes para realizar el análisis.
-            </div>
-
-        @endforelse
-
-    </div>
 
 </section>
 

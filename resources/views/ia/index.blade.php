@@ -97,92 +97,74 @@
 
                 <h3>Resumen del modelo</h3>
 
-                <div class="stats-grid">
+                @php
+                    $grupos = $resultado['grupos'] ?? [];
 
-                    <div class="stat-card">
-                        <span>Modelo de predicción</span>
+                    $produccionTotal = collect($grupos)->sum('produccion_actual');
+
+                    $promedioGrupo = count($grupos) > 0 ? $produccionTotal / count($grupos) : 0;
+
+                    $gruposConAnomalia = collect($grupos)->where('anomalia_modelo', true)->count();
+
+                    $grupoMayorProduccion = collect($grupos)->sortByDesc('produccion_actual')->first();
+
+                    $grupoMenorProduccion = collect($grupos)->sortBy('produccion_actual')->first();
+                @endphp
+
+                <div class="ia-kpi-grid">
+
+                    <div class="ia-kpi-card ia-kpi-green">
+                        <span>Producción total</span>
+
                         <strong>
-                            {{ $resultado['modelo']['prediccion'] }}
+                            {{ number_format($produccionTotal, 2) }} L
                         </strong>
+
+                        <small>
+                            Producción actual de los grupos analizados
+                        </small>
                     </div>
 
-                    <div class="stat-card">
-                        <span>Detección de anomalías</span>
+                    <div class="ia-kpi-card ia-kpi-blue">
+                        <span>Promedio por grupo</span>
+
                         <strong>
-                            {{ $resultado['modelo']['deteccion_anomalias'] }}
+                            {{ number_format($promedioGrupo, 2) }} L
                         </strong>
+
+                        <small>
+                            Promedio de producción por grupo
+                        </small>
                     </div>
 
-                    <div class="stat-card">
-                        <span>Registros analizados</span>
-                        <strong>
-                            {{ $resultado['modelo']['total_registros'] }}
-                        </strong>
-                    </div>
+                    <div class="ia-kpi-card ia-kpi-yellow">
+                        <span>Horizonte de predicción</span>
 
-                    <div class="stat-card">
-                        <span>Horizonte</span>
                         <strong>
                             {{ $resultado['modelo']['horizonte_dias'] }} días
                         </strong>
+
+                        <small>
+                            Periodo proyectado por el modelo
+                        </small>
+                    </div>
+
+                    <div class="ia-kpi-card ia-kpi-red">
+                        <span>Grupos con anomalía</span>
+
+                        <strong>
+                            {{ $gruposConAnomalia }}
+                        </strong>
+
+                        <small>
+                            de {{ count($grupos) }} grupos analizados
+                        </small>
                     </div>
 
                 </div>
 
             </div>
 
-            @if (isset($resultado['modelo']['metricas']))
-                <div class="card">
-
-                    <h3>Métricas del modelo</h3>
-
-                    @php
-                        $metricas = $resultado['modelo']['metricas'];
-                    @endphp
-
-                    <div class="stats-grid">
-
-                        <div class="stat-card">
-                            <span>MAE</span>
-                            <strong>
-                                {{ number_format($metricas['mae'], 2) }}
-                                L
-                            </strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>RMSE</span>
-                            <strong>
-                                {{ number_format($metricas['rmse'], 2) }}
-                                L
-                            </strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>R²</span>
-                            <strong>
-                                {{ number_format($metricas['r2'], 3) }}
-                            </strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>Entrenamiento</span>
-                            <strong>
-                                {{ $metricas['registros_entrenamiento'] }}
-                            </strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>Prueba</span>
-                            <strong>
-                                {{ $metricas['registros_prueba'] }}
-                            </strong>
-                        </div>
-
-                    </div>
-
-                </div>
-            @endif
 
             @if (empty($grupoSeleccionado))
                 <div class="card">
@@ -220,6 +202,170 @@
                 </div>
             @endif
 
+            @if (!empty($resultado['grupos']))
+                <div class="card">
+
+                    <h3>Producción por grupo</h3>
+
+                    <p>
+                        Comparación de la producción actual entre los grupos analizados.
+                    </p>
+
+                    <div class="ia-chart-container">
+                        <canvas id="chart-produccion-grupos"></canvas>
+                    </div>
+
+                </div>
+            @endif
+
+            <!--Resumen inteligente + Hallazgos y recomendaciones. -->
+            @if (!empty($resultado['grupos']))
+
+                @php
+                    $grupos = collect($resultado['grupos']);
+
+                    $grupoMejor = $grupos->sortByDesc('produccion_actual')->first();
+
+                    $grupoMenor = $grupos->sortBy('produccion_actual')->first();
+
+                    $gruposAnomalia = $grupos->where('anomalia_modelo', true);
+
+                    $tendenciasAscendentes = $grupos->where('tendencia', 'ascendente')->count();
+
+                    $tendenciasDescendentes = $grupos->where('tendencia', 'descendente')->count();
+                @endphp
+
+                <div class="ia-insights-grid">
+
+                    <div class="card">
+
+                        <div class="ia-insight-title">
+                            <div class="ia-insight-icon">
+                                🤖
+                            </div>
+
+                            <div>
+                                <h3>Resumen inteligente</h3>
+                                <small>
+                                    Interpretación general de la producción analizada
+                                </small>
+                            </div>
+                        </div>
+
+                        <p>
+                            Se analizaron
+                            <strong>{{ $grupos->count() }}</strong>
+                            grupos de ordeña.
+                        </p>
+
+                        @if ($grupoMejor)
+                            <p>
+                                El grupo con mayor producción actual es
+                                <strong>{{ $grupoMejor['grupo'] }}</strong>
+                                con
+                                <strong>
+                                    {{ number_format($grupoMejor['produccion_actual'], 2) }}
+                                    L
+                                </strong>.
+                            </p>
+                        @endif
+
+                        @if ($grupoMenor)
+                            <p>
+                                El grupo con menor producción actual es
+                                <strong>{{ $grupoMenor['grupo'] }}</strong>
+                                con
+                                <strong>
+                                    {{ number_format($grupoMenor['produccion_actual'], 2) }}
+                                    L
+                                </strong>.
+                            </p>
+                        @endif
+
+                        <p>
+                            Tendencias ascendentes:
+                            <strong>{{ $tendenciasAscendentes }}</strong>
+                            |
+                            Tendencias descendentes:
+                            <strong>{{ $tendenciasDescendentes }}</strong>
+                        </p>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="ia-insight-title">
+                            <div class="ia-insight-icon ia-insight-icon-warning">
+                                💡
+                            </div>
+
+                            <div>
+                                <h3>Hallazgos y recomendaciones</h3>
+                                <small>
+                                    Aspectos relevantes detectados en los grupos
+                                </small>
+                            </div>
+                        </div>
+
+                        @if ($gruposAnomalia->count() > 0)
+
+                            @foreach ($gruposAnomalia as $grupo)
+                                <div class="ia-finding ia-finding-warning">
+
+                                    <strong>
+                                        {{ $grupo['grupo'] }}
+                                    </strong>
+
+                                    <p>
+                                        Se detectó un comportamiento atípico
+                                        en la producción del grupo.
+                                    </p>
+
+                                    <small>
+                                        {{ $grupo['clasificacion']['mensaje'] }}
+                                    </small>
+
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="ia-finding ia-finding-success">
+
+                                <strong>
+                                    Sin anomalías relevantes
+                                </strong>
+
+                                <p>
+                                    No se detectaron comportamientos atípicos
+                                    en los grupos analizados.
+                                </p>
+
+                            </div>
+
+                        @endif
+
+                        @if ($grupoMenor)
+                            <div class="ia-finding">
+
+                                <strong>
+                                    Grupo a revisar:
+                                    {{ $grupoMenor['grupo'] }}
+                                </strong>
+
+                                <p>
+                                    Presenta la producción más baja del periodo.
+                                    Se recomienda revisar alimentación,
+                                    cantidad de vacas, duración del ordeño y
+                                    posibles factores sanitarios.
+                                </p>
+
+                            </div>
+                        @endif
+
+                    </div>
+
+                </div>
+
+            @endif
             @foreach ($resultado['grupos'] as $grupo)
                 <div class="card">
 
@@ -601,6 +747,85 @@
                                     title: {
                                         display: true,
                                         text: 'Fecha'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                );
+            }
+
+            const barrasCanvas =
+                document.getElementById(
+                    'chart-produccion-grupos'
+                );
+
+            if (barrasCanvas) {
+
+                const grupos =
+                    @json($resultado['grupos'] ?? []);
+
+                const labels =
+                    grupos.map(
+                        grupo => grupo.grupo
+                    );
+
+                const valores =
+                    grupos.map(
+                        grupo => grupo.produccion_actual
+                    );
+
+                const coloresBarras = [
+                    '#15803d',
+                    '#2563eb',
+                    '#f97316',
+                    '#9333ea',
+                    '#dc2626',
+                    '#0891b2'
+                ];
+
+                new Chart(
+                    barrasCanvas, {
+                        type: 'bar',
+
+                        data: {
+                            labels: labels,
+
+                            datasets: [{
+                                label: 'Producción actual',
+
+                                data: valores,
+
+                                backgroundColor: coloresBarras,
+
+                                borderRadius: 8
+                            }]
+                        },
+
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+
+                                    title: {
+                                        display: true,
+                                        text: 'Litros'
+                                    }
+                                },
+
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Grupo'
                                     }
                                 }
                             }
