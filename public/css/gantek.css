@@ -1081,3 +1081,492 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
     font-size: 11px;
     text-align: center;
 }
+
+
+/* ==========================================
+   GANTEK - NUEVO DISEÑO DE PERFIL
+========================================== */
+
+.gantek-profile {
+    width: 100%;
+    max-width: 1350px;
+    margin: 0 auto;
+    color: #183b30;
+}
+
+.gp-title {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.gp-title h2 {
+    font-size: 30px;
+    font-weight: 750;
+    margin: 0;
+    color: #153d30;
+}
+
+.gp-title p {
+    margin: 4px 0 0;
+    color: #526b60;
+    font-size: 14px;
+}
+
+.gp-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #b9d2c0;
+    background: #ffffffd9;
+    color: #15583f;
+    text-decoration: none;
+    font-size: 28px;
+}
+
+.gp-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.85fr)
+                           minmax(0, 1.6fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.gp-card {
+    background: #ffffff;
+    border: 1px solid #d5e3d9;
+    border-radius: 18px;
+    box-shadow: 0 10px 32px rgba(22, 65, 45, 0.12);
+    overflow: hidden;
+}
+
+/* TARJETA IZQUIERDA */
+
+.gp-cover {
+    height: 145px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(19, 65, 44, 0.06),
+            rgba(19, 65, 44, 0.28)
+        ),
+        url('/images/ganado-fondo.jpg')
+        center / cover no-repeat;
+}
+
+.gp-summary-body {
+    position: relative;
+    padding: 0 25px 28px;
+}
+
+.gp-avatar-area {
+    display: flex;
+    justify-content: center;
+    margin-top: -75px;
+}
+
+.gp-avatar-label {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #e5efe6;
+    border: 5px solid #ffffff;
+    cursor: pointer;
+    box-shadow: 0 5px 15px #183a2a25;
+}
+
+.gp-avatar-image,
+.gp-avatar-initial {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.gp-avatar-image {
+    object-fit: cover;
+}
+
+.gp-avatar-initial {
+    display: grid;
+    place-items: center;
+    background: #287650;
+    color: white;
+    font-size: 56px;
+    font-weight: 700;
+}
+
+.gp-camera {
+    position: absolute;
+    right: 0;
+    bottom: 7px;
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    background: #176443;
+    border: 3px solid white;
+    border-radius: 50%;
+    font-size: 18px;
+}
+
+.gp-username {
+    text-align: center;
+    font-size: 24px;
+    margin: 16px 0 7px;
+    overflow-wrap: anywhere;
+}
+
+.gp-role {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 22px;
+    padding: 6px 19px;
+    background: #e3f2e6;
+    color: #176143;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 30px;
+}
+
+.gp-status {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    padding: 16px;
+    background: #edf6ef;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.gp-status-icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #168448;
+    color: white;
+    flex-shrink: 0;
+}
+
+.gp-status strong,
+.gp-status small {
+    display: block;
+}
+
+.gp-status small {
+    color: #60776b;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.gp-detail {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 4px;
+    border-top: 1px solid #e5eee7;
+}
+
+.gp-detail-icon {
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #e9f4ec;
+    color: #176143;
+    font-size: 23px;
+}
+
+.gp-detail > div {
+    min-width: 0;
+}
+
+.gp-detail small {
+    display: block;
+    color: #667a70;
+    margin-bottom: 3px;
+}
+
+.gp-detail span:not(.gp-detail-icon) {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+/* FORMULARIO DERECHO */
+
+.gp-form-card {
+    padding: 30px;
+}
+
+.gp-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.gp-section-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #e7f2e9;
+    color: #196344;
+    font-size: 25px;
+}
+
+.gp-section-heading h3 {
+    margin: 0 0 5px;
+    font-size: 21px;
+}
+
+.gp-section-heading p {
+    margin: 0;
+    font-size: 13px;
+    color: #718177;
+}
+
+.gp-field {
+    margin-bottom: 22px;
+}
+
+.gp-field label {
+    display: block;
+    font-weight: 650;
+    margin-bottom: 9px;
+    color: #234237;
+}
+
+.gp-field label span {
+    color: #d33434;
+}
+
+.gp-field input:not([type="file"]) {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #cbdad0;
+    border-radius: 9px;
+    background: #ffffff;
+    padding: 10px 15px;
+    color: #1c3d31;
+    font-size: 15px;
+    outline: none;
+}
+
+.gp-field input:focus {
+    border-color: #25835a;
+    box-shadow: 0 0 0 3px #24895b1c;
+}
+
+.gp-email-container {
+    position: relative;
+}
+
+.gp-field input[readonly] {
+    background: #edf0f2;
+    color: #78848d;
+    padding-right: 115px;
+    cursor: not-allowed;
+}
+
+.gp-readonly {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #e2e9ed;
+    border: 1px solid #cbd4db;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 11px;
+    color: #60707c;
+}
+
+.gp-help {
+    display: block;
+    margin-top: 7px;
+    font-size: 12px;
+    color: #75857c;
+}
+
+.gp-error {
+    display: block;
+    margin-top: 7px;
+    color: #b02b37;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gp-file-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.gp-upload {
+    display: flex !important;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    border: 2px dashed #c6dacc;
+    border-radius: 12px;
+    background: #f8fcf8;
+    cursor: pointer;
+}
+
+.gp-upload:hover {
+    background: #edf8f0;
+    border-color: #4c9b6c;
+}
+
+.gp-upload-icon {
+    display: grid;
+    place-items: center;
+    width: 47px;
+    height: 47px;
+    border-radius: 10px;
+    background: #e4f0e7;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.gp-upload strong,
+.gp-upload small {
+    display: block;
+}
+
+.gp-upload strong {
+    color: #176143;
+    font-size: 14px;
+}
+
+.gp-upload small {
+    font-weight: 400;
+    font-size: 12px;
+    margin-top: 4px;
+    color: #708177;
+}
+
+/* SEGURIDAD */
+
+.gp-security {
+    display: flex;
+    gap: 15px;
+    padding: 22px 0;
+    border-top: 1px solid #e2eae5;
+    margin-top: 12px;
+}
+
+.gp-security-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: #e8f3eb;
+    font-size: 22px;
+}
+
+.gp-security h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.gp-security p {
+    margin: 0;
+    font-size: 13px;
+    color: #697b71;
+}
+
+/* BOTONES */
+
+.gp-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-top: 20px;
+    border-top: 1px solid #e5ece7;
+}
+
+.gp-btn-cancel,
+.gp-btn-save {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    border-radius: 9px;
+    padding: 10px 22px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.gp-btn-cancel {
+    border: 1px solid #b6d3bf;
+    background: #f6faf7;
+    color: #155b3e;
+}
+
+.gp-btn-save {
+    border: 1px solid #155b3e;
+    background: #176443;
+    color: #ffffff;
+}
+
+.gp-btn-save:hover {
+    background: #0f4e34;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+    .gp-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .gp-title h2 {
+        font-size: 24px;
+    }
+
+    .gp-form-card {
+        padding: 20px;
+    }
+
+    .gp-summary-body {
+        padding: 0 18px 22px;
+    }
+
+    .gp-actions {
+        flex-direction: column;
+    }
+
+    .gp-btn-cancel,
+    .gp-btn-save {
+        width: 100%;
+    }
+}
+
+/* Ocultar encabezado anterior solo en el perfil */
+.content:has(.gantek-profile) > .page-heading {
+    display: none;
+}
