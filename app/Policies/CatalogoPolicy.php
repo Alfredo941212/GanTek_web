@@ -8,6 +8,7 @@ use App\Models\Veterinario;
 
 class CatalogoPolicy
 {
+    // Todos pueden consultar
     public function viewAny(User $user): bool
     {
         return true;
@@ -18,18 +19,21 @@ class CatalogoPolicy
         return true;
     }
 
+    // Todos pueden registrar
     public function create(User $user): bool
     {
-        return $user->puede_gestionar_catalogos;
+        return true;
     }
 
+    // Todos pueden editar
     public function update(User $user, Vacuna|Veterinario $registro): bool
     {
-        return $user->puede_gestionar_catalogos;
+        return true;
     }
 
+    // Todos pueden desactivar
     public function delete(User $user, Vacuna|Veterinario $registro): bool
     {
-        return $user->puede_gestionar_catalogos;
+        return true;
     }
 }
