@@ -33,7 +33,6 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $user->name = trim($validated['name']);
-        $user->last_name = null;
         $user->phone = $validated['phone'] ?? null;
 
         if ($request->hasFile('avatar')) {
