@@ -1,3 +1,76 @@
+/* Edición de perfil */
+.content:has(.gantek-profile) .page-heading { min-height:112px; padding:22px 28px; margin-bottom:20px }
+.content:has(.gantek-profile) .page-heading h1 { font-size:28px; margin-bottom:6px }
+.content:has(.gantek-profile) .page-heading .eyebrow { margin:0 0 8px }
+.gantek-profile { max-width:1200px; margin:0 auto 24px; font-size:15px; line-height:1.5 }
+.gantek-profile .gp-title { display:flex; align-items:center; gap:14px; margin-bottom:22px }
+.gantek-profile .gp-title h2 { margin:0; font-size:22px; line-height:1.3 }
+.gantek-profile .gp-title p { margin:4px 0 0; color:var(--muted); font-size:14px }
+.gantek-profile .gp-back { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; border:1px solid var(--border); border-radius:12px; background:#fff; text-decoration:none; font-size:22px }
+.gantek-profile .gp-layout { display:grid; grid-template-columns:300px minmax(0,1fr); align-items:start; gap:24px }
+.gantek-profile .gp-card { min-width:0; overflow:hidden; border:1px solid #d4e1d7; border-radius:20px; background:#fffefa; box-shadow:0 8px 28px #123f3210 }
+.gantek-profile .gp-cover { height:72px; background:linear-gradient(120deg,#123f32,#347858); border-bottom:3px solid #c6a66a }
+.gantek-profile .gp-summary-body { padding:0 24px 24px }
+.gantek-profile .gp-avatar-area { position:relative; margin-top:-40px; margin-bottom:16px }
+.gantek-profile .gp-avatar-label { display:block; position:relative; width:88px; height:88px; cursor:pointer }
+.gantek-profile .gp-avatar-initial,.gantek-profile .gp-avatar-image { display:grid; place-items:center; width:88px; height:88px; border:5px solid #fffefa; border-radius:50%; background:#e0eddf; color:#194f39; font-size:32px; font-weight:700; object-fit:cover }
+.gantek-profile .gp-camera { position:absolute; right:-2px; bottom:0; display:grid; place-items:center; width:30px; height:30px; border:2px solid #fff; border-radius:50%; background:#e7efe5; font-size:14px }
+.gantek-profile .gp-username { margin:0 0 10px; font-size:20px; line-height:1.4; overflow-wrap:anywhere }
+.gantek-profile .gp-role { display:inline-block; padding:4px 12px; border-radius:20px; background:#edf2e8; color:#44613c; font-size:12px; font-weight:600 }
+.gantek-profile .gp-status { display:flex; gap:10px; margin:18px 0; padding:12px; border:1px solid #d9e7d8; border-radius:12px; background:#f0f7ed }
+.gantek-profile .gp-status-icon { color:#287345; font-weight:700 }
+.gantek-profile .gp-status strong { display:block; font-size:13px }
+.gantek-profile .gp-status small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.5 }
+.gantek-profile .gp-detail { display:flex; gap:12px; padding:12px 0; border-top:1px solid #e5ebe2 }
+.gantek-profile .gp-detail-icon { flex-shrink:0; color:#6b806d }
+.gantek-profile .gp-detail small { display:block; margin-bottom:3px; color:var(--muted); font-size:12px }
+.gantek-profile .gp-detail span { font-size:13px; overflow-wrap:anywhere }
+.gantek-profile .gp-detail > div { min-width:0 }
+.gantek-profile .gp-form-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px 20px; padding:24px }
+.gantek-profile .gp-form-card > * { grid-column:1 / -1; min-width:0 }
+.gantek-profile .gp-section-heading { display:flex; align-items:flex-start; gap:12px; margin-bottom:0; padding-bottom:18px; border-bottom:1px solid #e5ebe2 }
+.gantek-profile .gp-section-icon { display:grid; place-items:center; flex-shrink:0; width:40px; height:40px; border-radius:12px; background:#edf3e9; font-size:22px }
+.gantek-profile .gp-section-heading h3 { margin:0; font-size:19px }
+.gantek-profile .gp-section-heading p { margin:5px 0 0; color:var(--muted); font-size:13px }
+.gantek-profile .gp-field { margin:0 }
+.gantek-profile .gp-field > label:first-child { display:block; margin-bottom:7px; font-size:14px; font-weight:600 }
+.gantek-profile .gp-field > label:first-child span { color:#a34730 }
+.gantek-profile .gp-field input:not([type=file]) { width:100%; min-height:46px; padding:11px 14px; border:1px solid #b9ccbd; border-radius:10px; background:#fff; color:var(--ink); font-size:14px }
+.gantek-profile .gp-email-container { position:relative }
+.gantek-profile .gp-email-container input[readonly] { padding-right:112px; background:#f1f3ef; color:#5e6e62 }
+.gantek-profile .gp-readonly { position:absolute; top:50%; right:12px; transform:translateY(-50%); padding:3px 8px; border-radius:6px; background:#e4e9e1; color:#546550; font-size:11px; pointer-events:none }
+.gantek-profile .gp-help { display:block; margin-top:7px; color:var(--muted); font-size:12px; line-height:1.5 }
+.gantek-profile .gp-error { display:block; margin-top:7px; color:#a1352c; font-size:13px }
+.gantek-profile input.gp-file-hidden { position:absolute; width:1px; height:1px; min-height:0; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap }
+.gantek-profile .gp-upload { display:flex; align-items:center; gap:14px; min-height:68px; padding:12px 16px; border:1px dashed #97b39a; border-radius:12px; background:#f7faf4; cursor:pointer }
+.gantek-profile .gp-upload-icon { display:grid; place-items:center; width:40px; height:40px; border-radius:10px; background:#e6efdf; font-size:20px }
+.gantek-profile .gp-upload strong { display:block; color:#235b3d; font-size:14px }
+.gantek-profile .gp-upload small { display:block; margin-top:3px; color:var(--muted); font-size:12px; font-weight:400 }
+.gantek-profile .gp-security { display:flex; gap:12px; padding:16px; border:1px solid #e4e7dc; border-radius:12px; background:#f6f6ef }
+.gantek-profile .gp-security h3 { margin:0 0 4px; font-size:13px }
+.gantek-profile .gp-security p { margin:0; color:var(--muted); font-size:12px; line-height:1.6 }
+.gantek-profile .gp-actions { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:0; padding-top:18px; border-top:1px solid #e5ebe2 }
+.gantek-profile .gp-btn-cancel,.gantek-profile .gp-btn-save { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:11px 20px; border:1px solid #bccdbe; border-radius:10px; font-size:14px; font-weight:600; text-decoration:none }
+.gantek-profile .gp-btn-cancel { background:#fffefa; color:#47604d }
+.gantek-profile .gp-btn-save { border-color:#196b49; background:#196b49; color:#fff }
+.gantek-profile .gp-btn-save:hover { background:#125438 }
+.gantek-profile .gp-btn-cancel:hover,.gantek-profile .gp-back:hover,.gantek-profile .gp-upload:hover { background:#edf3e9 }
+.gantek-profile :is(a,button,input):focus-visible,.gantek-profile .gp-file-hidden:focus-visible + .gp-upload { outline:3px solid #b28a48; outline-offset:3px }
+@media(min-width:1200px) {
+    .gantek-profile .gp-field:nth-of-type(3),.gantek-profile .gp-field:nth-of-type(4) { grid-column:auto }
+}
+@media(max-width:1000px) {
+    .gantek-profile .gp-layout { grid-template-columns:1fr }
+    .gantek-profile .gp-summary-body { padding-bottom:16px }
+}
+@media(max-width:540px) {
+    .gantek-profile { margin:20px auto 24px }
+    .gantek-profile .gp-layout { gap:18px }
+    .gantek-profile .gp-form-card { padding:20px 16px }
+    .gantek-profile .gp-actions { flex-direction:column-reverse; align-items:stretch }
+    .gantek-profile .gp-section-heading h3 { font-size:17px }
+}
+
 :root {
 
     --forest:#123f32;
