@@ -30,7 +30,7 @@
         'type' => 'select',
         'required' => true,
         'value' => $registro?->sexo ?? '',
-        'options' => ['Macho' => 'Macho', 'Hembra' => 'Hembra'],
+        'options' => [ 'Hembra' => 'Hembra'],
     ])
     @include('partials.field', [
         'name' => 'raza',

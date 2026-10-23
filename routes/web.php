@@ -13,10 +13,10 @@ use App\Http\Controllers\VacunacionController;
 use App\Http\Controllers\VacunaController;
 use App\Http\Controllers\VeterinarioController;
 use App\Http\Controllers\TareaController;
-use App\Http\Controllers\AnalisisIAWebController;
-use App\Http\Controllers\OrdenioWebController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\IaProduccionWebController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrdenioWebController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -67,9 +67,9 @@ Route::middleware('guest')->group(function (): void {
 
     Route::get('/ordenios', [OrdenioWebController::class, 'index'])
         ->name('ordenios.index');
-    
+
     Route::get('/jornadas-ordenio', [OrdenioWebController::class, 'index'])
-    ->name('jornadas-ordenio.index');
+        ->name('jornadas-ordenio.index');
 });
 
 // Rutas para usuarios autenticados
@@ -144,12 +144,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/reportes', [ReportController::class, 'index'])
         ->name('reportes.index');
 
-    // Análisis inteligente
-    Route::get('/analisis-ia', [AnalisisIAWebController::class, 'index'])
-        ->name('ia.index');
+    Route::get(
+        '/analisis-ia',
+        [IAProduccionWebController::class, 'index']
+    )->name('ia.index');
 
-    Route::post(
-        '/analisis-ia/{ganado}/agregar-agenda',
-        [AnalisisIAWebController::class, 'agregarAgenda']
-    )->name('ia.agregar-agenda');
 });
