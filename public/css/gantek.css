@@ -1073,3 +1073,123 @@ dialog::backdrop { background:#082a22aa; backdrop-filter:blur(4px) }
     );
     border-left: 4px solid #f59e0b;
 }
+
+/* =========================================
+   PAGINACIÓN GANTEK
+========================================= */
+
+.gantek-pagination {
+    margin-top: 24px;
+    padding: 18px 20px;
+
+    background: #ffffff;
+    border: 1px solid #dfe8df;
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #5f6f64;
+    text-align: center;
+}
+
+.pagination-info strong {
+    color: #0f5132;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pagination-btn,
+.pagination-number {
+    min-width: 42px;
+    height: 42px;
+
+    padding: 0 14px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.pagination-btn {
+    border: 1px solid #b9d0bf;
+    background: #ffffff;
+    color: #166534;
+}
+
+.pagination-number {
+    border: 1px solid #d3dfd5;
+    background: #f8faf8;
+    color: #33443a;
+
+    padding: 0;
+}
+
+.pagination-btn:hover,
+.pagination-number:hover {
+    background: #e8f4eb;
+    border-color: #87ad91;
+    color: #0f5132;
+
+    transform: translateY(-1px);
+}
+
+.pagination-number.active {
+    background: #146c43;
+    border-color: #146c43;
+    color: #ffffff;
+}
+
+.pagination-btn.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    .gantek-pagination {
+        padding: 16px 12px;
+    }
+
+    .pagination-controls {
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        padding: 0 10px;
+        font-size: 13px;
+    }
+
+    .pagination-number {
+        min-width: 38px;
+        height: 38px;
+    }
+}

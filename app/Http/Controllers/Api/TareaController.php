@@ -13,15 +13,28 @@ class TareaController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $tareas = Tarea::where('user_id', $request->user()->id)
+        $tareas = Tarea::where(
+            'user_id',
+            $request->user()->id
+        )
             ->orderBy('fecha')
             ->orderBy('hora')
             ->orderBy('id')
-            ->paginate(5);
+            ->paginate(50);
 
         return response()->json([
             'success' => true,
-            'data' => $tareas,
+
+            // Flutter recibe directamente la lista
+            'data' => $tareas->items(),
+
+            // Conservamos información de paginación
+            'pagination' => [
+                'current_page' => $tareas->currentPage(),
+                'last_page' => $tareas->lastPage(),
+                'per_page' => $tareas->perPage(),
+                'total' => $tareas->total(),
+            ],
         ]);
     }
 
@@ -205,6 +218,34 @@ class TareaController extends Controller
             'success' => true,
             'message' => 'Tarea cancelada.',
             'data' => $tarea->fresh(),
+        ]);
+    }
+
+    public function destroy(
+        Request $request,
+        Tarea $tarea
+    ): JsonResponse {
+        $this->validarPropietario(
+            $request,
+            $tarea
+        );
+
+        if (! in_array(
+            $tarea->estado,
+            ['vencida', 'cancelada'],
+            true
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo se pueden eliminar tareas vencidas o canceladas.',
+            ], 422);
+        }
+
+        $tarea->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tarea eliminada correctamente.',
         ]);
     }
 

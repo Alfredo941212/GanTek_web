@@ -102,7 +102,8 @@
                         <label for="fecha">Fecha</label>
 
                         <input type="date" id="fecha" name="fecha"
-                            value="{{ old('fecha', today()->toDateString()) }}" required>
+                            value="{{ old('fecha', today()->toDateString()) }}" min="{{ today()->toDateString() }}"
+                            required>
                     </div>
 
                     <div class="form-group">
@@ -225,6 +226,22 @@
                             </div>
                         @endif
 
+                        @if (in_array($tarea->estado, ['vencida', 'cancelada']))
+                            <div class="agenda-actions">
+
+                                <form method="POST" action="{{ route('agenda.destroy', $tarea) }}"
+                                    onsubmit="return confirm('¿Estás segur@ de eliminar esta tarea? Esta acción no se puede deshacer.');">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button class="btn" type="submit">
+                                        Eliminar tarea
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        @endif
                     </div>
 
                 @empty
@@ -236,7 +253,59 @@
 
                 @if ($tareas->hasPages())
                     <div class="agenda-pagination">
-                        {{ $tareas->links() }}
+                        @if ($tareas->hasPages())
+                            <div class="gantek-pagination">
+
+                                <div class="pagination-info">
+                                    Mostrando
+                                    <strong>{{ $tareas->firstItem() }}</strong>
+                                    a
+                                    <strong>{{ $tareas->lastItem() }}</strong>
+                                    de
+                                    <strong>{{ $tareas->total() }}</strong>
+                                    resultados
+                                </div>
+
+                                <div class="pagination-controls">
+
+                                    {{-- Anterior --}}
+                                    @if ($tareas->onFirstPage())
+                                        <span class="pagination-btn disabled">
+                                            ‹ Anterior
+                                        </span>
+                                    @else
+                                        <a href="{{ $tareas->previousPageUrl() }}" class="pagination-btn">
+                                            ‹ Anterior
+                                        </a>
+                                    @endif
+
+                                    {{-- Números --}}
+                                    @foreach ($tareas->getUrlRange(1, $tareas->lastPage()) as $page => $url)
+                                        @if ($page == $tareas->currentPage())
+                                            <span class="pagination-number active">
+                                                {{ $page }}
+                                            </span>
+                                        @else
+                                            <a href="{{ $url }}" class="pagination-number">
+                                                {{ $page }}
+                                            </a>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Siguiente --}}
+                                    @if ($tareas->hasMorePages())
+                                        <a href="{{ $tareas->nextPageUrl() }}" class="pagination-btn">
+                                            Siguiente ›
+                                        </a>
+                                    @else
+                                        <span class="pagination-btn disabled">
+                                            Siguiente ›
+                                        </span>
+                                    @endif
+
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endif
 

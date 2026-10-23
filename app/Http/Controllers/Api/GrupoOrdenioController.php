@@ -117,13 +117,35 @@ class GrupoOrdenioController extends Controller
             $grupoOrdenio
         );
 
-        $grupoOrdenio->update([
-            'estado' => 'Inactivo',
-        ]);
+        // Si actualmente tiene ganado, no se puede quitar
+        if ($grupoOrdenio->ganado()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar el grupo porque tiene ganado asignado.',
+            ], 422);
+        }
+
+        // Si tuvo jornadas anteriormente, conservar historial
+        // pero ocultarlo de los grupos activos.
+        if ($grupoOrdenio->sesiones()->exists()) {
+            $grupoOrdenio->update([
+                'estado' => 'Inactivo',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Grupo retirado correctamente. Su historial de jornadas se conserva.',
+                'archived' => true,
+            ]);
+        }
+
+        // Si nunca tuvo ganado/jornadas, sí puede eliminarse completamente
+        $grupoOrdenio->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Grupo desactivado correctamente.',
+            'message' => 'Grupo eliminado correctamente.',
+            'archived' => false,
         ]);
     }
 

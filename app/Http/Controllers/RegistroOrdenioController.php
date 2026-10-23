@@ -55,8 +55,11 @@ class RegistroOrdenioController extends Controller
             ])
             ->orderByDesc('fecha')
             ->orderByDesc('id')
-            ->limit(20)
-            ->get();
+            ->paginate(
+                5,
+                ['*'],
+                'historial_page'
+            );
 
         return view('ordenios.index', [
             'ordenios' => $ordenios,
