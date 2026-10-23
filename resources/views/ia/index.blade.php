@@ -51,34 +51,13 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="fecha_inicio">
-                            Fecha inicio
-                        </label>
-
-                        <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ $fechaInicio }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fecha_fin">
-                            Fecha fin
-                        </label>
-
-                        <input type="date" name="fecha_fin" id="fecha_fin" value="{{ $fechaFin }}">
-                    </div>
 
                 </div>
 
-                <div class="form-actions">
-
-                    <button type="submit" class="btn-primary">
+                <div class="agenda-actions">
+                    <button class="btn primary" type="submit">
                         Consultar
                     </button>
-
-                    <a href="{{ route('ia.index') }}" class="btn-secondary">
-                        Limpiar
-                    </a>
-
                 </div>
 
             </form>
