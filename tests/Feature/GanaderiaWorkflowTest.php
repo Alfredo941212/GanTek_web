@@ -19,7 +19,8 @@ class GanaderiaWorkflowTest extends TestCase
     {
         $user = User::factory()->create(['puede_gestionar_catalogos' => true]);
         $this->actingAs($user);
-        $this->post(route('fincas.store'), ['nombre' => 'Mi finca', 'municipio' => 'Prueba', 'estado' => 'Veracruz'])->assertRedirect(route('fincas.index'));
+        Finca::factory()->conUbicacionCatalogada()->make();
+        $this->post(route('fincas.store'), ['nombre' => 'Mi finca', 'municipio_clave' => '01001', 'estado_clave' => '01'])->assertRedirect(route('fincas.index'));
         $finca = Finca::firstOrFail();
         $this->assertSame($user->id, $finca->user_id);
         $this->post(route('lotes.store'), ['finca_id' => $finca->id, 'nombre' => 'Mi lote',  'produccion_minima_por_vaca' => 4.00, 'estado' => 'Activo'])->assertRedirect(route('lotes.index'));
@@ -74,13 +75,13 @@ class GanaderiaWorkflowTest extends TestCase
         $user = User::where('email', 'admin@gantek.test')->firstOrFail();
         $this->actingAs($user);
         foreach (['fincas' => Finca::class, 'lotes' => Lote::class, 'ganado' => Ganado::class, 'vacunaciones' => Vacunacion::class, 'ordenios' => RegistroOrdenio::class] as $resource => $model) {
-            $this->get(route($resource . '.create'))->assertOk();
-            $this->get(route($resource . '.edit', $model::forUser($user)->firstOrFail()))->assertOk();
+            $this->get(route($resource.'.create'))->assertOk();
+            $this->get(route($resource.'.edit', $model::forUser($user)->firstOrFail()))->assertOk();
         }
         foreach (['vacunas' => Vacuna::class, 'veterinarios' => Veterinario::class] as $resource => $model) {
-            $this->get(route($resource . '.index'))->assertOk();
-            $this->get(route($resource . '.create'))->assertOk();
-            $this->get(route($resource . '.edit', $model::firstOrFail()))->assertOk();
+            $this->get(route($resource.'.index'))->assertOk();
+            $this->get(route($resource.'.create'))->assertOk();
+            $this->get(route($resource.'.edit', $model::firstOrFail()))->assertOk();
         }
         $this->get(route('reportes.index'))->assertOk();
         $this->get('/ventas')->assertNotFound();
@@ -103,7 +104,7 @@ class GanaderiaWorkflowTest extends TestCase
     {
         $animal = Ganado::factory()->create();
         $this->actingAs($animal->lote->finca->user);
-        $data = ['ganado_id' => $animal->id, 'fecha' => today()->subDay()->toDateString(),'numero_ordenio' => 1, 'turno' => 'Mañana', 'litros' => 5];
+        $data = ['ganado_id' => $animal->id, 'fecha' => today()->subDay()->toDateString(), 'numero_ordenio' => 1, 'turno' => 'Mañana', 'litros' => 5];
         $this->postJson(route('ordenios.store'), $data)->assertUnprocessable()->assertJsonValidationErrors('lote_historico_id');
         $this->post(route('ordenios.store'), $data + ['lote_historico_id' => $animal->lote_id])->assertRedirect();
         $this->assertDatabaseCount('registros_ordenio', 1);
@@ -113,7 +114,7 @@ class GanaderiaWorkflowTest extends TestCase
     {
         $registro = RegistroOrdenio::factory()->create();
         $this->actingAs($registro->ganado->lote->finca->user);
-        foreach (['ganado_id', 'lote_historico_id', 'fecha','numero_ordenio', 'turno'] as $field) {
+        foreach (['ganado_id', 'lote_historico_id', 'fecha', 'numero_ordenio', 'turno'] as $field) {
             $this->putJson(route('ordenios.update', $registro), ['litros' => 5, $field => null])
                 ->assertUnprocessable()->assertJsonValidationErrors($field);
         }

@@ -14,6 +14,16 @@ abstract class TestCase extends BaseTestCase
             throw new \LogicException('Las pruebas de GanTek solo pueden ejecutarse en SQLite :memory:.');
         }
 
-        $this->artisan('migrate', ['--database' => 'sqlite', '--force' => true, '--no-interaction' => true])->assertExitCode(0);
+        $opciones = ['--database' => 'sqlite', '--force' => true, '--no-interaction' => true];
+        if ($this->migrationPaths() !== []) {
+            $opciones['--path'] = $this->migrationPaths();
+        }
+        $this->artisan('migrate', $opciones)->assertExitCode(0);
+    }
+
+    /** @return list<string> */
+    protected function migrationPaths(): array
+    {
+        return [];
     }
 }

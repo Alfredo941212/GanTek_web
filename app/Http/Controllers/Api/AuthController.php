@@ -7,12 +7,16 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Kreait\Firebase\Factory;
 use Throwable;
 
 class AuthController extends Controller
 {
+    /**
+     * Registro normal desde la aplicación móvil.
+     */
     public function register(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -40,6 +44,10 @@ class AuthController extends Controller
             ],
         ], 201);
     }
+
+    /**
+     * Inicio de sesión normal con correo y contraseña.
+     */
     public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
@@ -47,7 +55,9 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
+        $email = strtolower(trim($credentials['email']));
+
+        $user = User::where('email', $email)->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([

@@ -25,7 +25,7 @@ class FincaController extends Controller
 
     public function store(FincaRequest $request): RedirectResponse
     {
-        $request->user()->fincas()->create($request->validated());
+        $request->user()->fincas()->create($request->datosFinca());
 
         return redirect()->route('fincas.index')->with('success', 'Registro creado correctamente.');
     }
@@ -39,7 +39,7 @@ class FincaController extends Controller
 
     public function update(FincaRequest $request, Finca $finca): RedirectResponse
     {
-        $finca->update($request->validated());
+        $finca->update($request->datosFinca());
 
         return redirect()->route('fincas.index')->with('success', 'Registro actualizado correctamente.');
     }
