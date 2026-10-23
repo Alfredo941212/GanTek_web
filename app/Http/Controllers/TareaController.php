@@ -61,7 +61,7 @@ class TareaController extends Controller
                 'required',
                 'in:ordenio,vacunacion,veterinaria,produccion,general',
             ],
-            'fecha' => ['required', 'date'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
             'hora' => ['nullable', 'date_format:H:i'],
             'prioridad' => ['required', 'in:baja,media,alta'],
             'recordatorio' => ['nullable', 'boolean'],

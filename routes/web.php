@@ -102,6 +102,9 @@ Route::middleware('auth')->group(function (): void {
 
     Route::patch('/agenda/{tarea}/cancelar', [TareaController::class, 'cancelar'])
         ->name('agenda.cancelar');
+    
+    Route::delete('/agenda/{tarea}', [TareaController::class, 'destroy'])
+    ->name('agenda.destroy');
 
     // Fincas
     Route::resource('fincas', FincaController::class)

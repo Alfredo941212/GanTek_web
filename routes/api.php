@@ -125,7 +125,6 @@ Route::middleware('auth:sanctum')->group(function () {
     */
 
     Route::apiResource('tareas', TareaController::class)
-        ->except(['destroy'])
         ->names('api.tareas');
 
     Route::patch('/tareas/{tarea}/completar', [TareaController::class, 'completar'])
