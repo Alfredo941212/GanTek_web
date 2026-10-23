@@ -26,7 +26,7 @@ class FincaController extends Controller
     {
         $finca = $request->user()
             ->fincas()
-            ->create($request->validated());
+            ->create($request->datosFinca());
 
         return response()->json([
             'message' => 'Finca registrada correctamente.',
@@ -45,7 +45,7 @@ class FincaController extends Controller
 
     public function update(FincaRequest $request, Finca $finca): JsonResponse
     {
-        $finca->update($request->validated());
+        $finca->update($request->datosFinca());
 
         return response()->json([
             'message' => 'Finca actualizada correctamente.',

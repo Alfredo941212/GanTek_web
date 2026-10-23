@@ -4,12 +4,22 @@ namespace Tests\Feature;
 
 use App\Models\Finca;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ApiFincaTest extends TestCase
 {
-    use RefreshDatabase;
+    /** @return list<string> */
+    protected function migrationPaths(): array
+    {
+        return [
+            'database/migrations/0001_01_01_000000_create_users_table.php',
+            'database/migrations/2026_09_12_161426_create_fincas_table.php',
+            'database/migrations/2026_09_12_161428_create_lotes_table.php',
+            'database/migrations/2026_09_15_143411_create_personal_access_tokens_table.php',
+            'database/migrations/2026_09_12_161456_add_catalog_management_permission_to_users_table.php',
+            'database/migrations/2026_10_20_121413_create_ubicaciones_tables.php',
+        ];
+    }
 
     public function test_authenticated_user_can_list_only_own_farms(): void
     {
@@ -43,12 +53,16 @@ class ApiFincaTest extends TestCase
 
     public function test_authenticated_user_can_create_farm(): void
     {
+        Finca::factory()->conUbicacionCatalogada()->make();
         $user = User::factory()->create();
         $token = $user->createToken('gantek-mobile')->plainTextToken;
 
         $response = $this->withToken($token)
             ->postJson('/api/fincas', [
                 'nombre' => 'Finca Lechera',
+                'estado_clave' => '01',
+                'municipio_clave' => '01001',
+                'localidad_clave' => '010010001',
                 'municipio' => 'Ocosingo',
                 'localidad' => 'San José',
                 'estado' => 'Chiapas',
@@ -93,7 +107,7 @@ class ApiFincaTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $finca = Finca::factory()->create([
+        $finca = Finca::factory()->conUbicacionCatalogada()->create([
             'user_id' => $user->id,
             'nombre' => 'Nombre Original',
         ]);
@@ -108,6 +122,9 @@ class ApiFincaTest extends TestCase
         $this->withToken($token)
             ->putJson("/api/fincas/{$finca->id}", [
                 'nombre' => 'Nombre Actualizado',
+                'estado_clave' => '01',
+                'municipio_clave' => '01001',
+                'localidad_clave' => '010010001',
                 'municipio' => $finca->municipio,
                 'localidad' => $finca->localidad,
                 'estado' => $finca->estado,

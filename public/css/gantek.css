@@ -34,9 +34,49 @@ a { color:#12603f; text-underline-offset:3px }
 
 button { cursor:pointer }
 
-[hidden] { display:none!important }
+[hidden] {
+    display: none !important;
+}
 
-:focus-visible { outline:3px solid #b77527; outline-offset:4px }
+/* Selector de localidades de Fincas */
+
+#resultados-localidades {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid #9abd9c;
+    border-radius: 8px;
+    background: #fffff5;
+    margin-top: 4px;
+}
+
+#resultados-localidades button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    padding: 10px 14px;
+    text-align: left;
+    background: transparent;
+    color: #174f37;
+    cursor: pointer;
+    font: inherit;
+}
+
+#resultados-localidades button:hover,
+#resultados-localidades button.activa,
+#resultados-localidades button[aria-selected="true"] {
+    background: #dfefdc;
+}
+
+#localidad-seleccionada {
+    color: #176b45;
+    font-weight: 600;
+}
+
+:focus-visible {
+    outline: 3px solid #b77527;
+    outline-offset: 4px;
+}
 
 .skip-link { position:fixed; top:-100px; left:16px; z-index:100; padding:12px; background:#fff }
 
