@@ -29,7 +29,7 @@
                 ['ordenios.index', 'Ordeños', 'ordenios.*'],
                 ['agenda.index', 'Agenda', 'agenda.*'],
                 ['ia.index', 'Análisis IA', 'ia.*'],
-                ['produccion.index', 'Producción y reportes', 'produccion.*'],
+              //  ['produccion.index', 'Producción y reportes', 'produccion.*'],
             ] as [$route, $label, $pattern])
                 <a href="{{ route($route) }}" @if(request()->routeIs($pattern)) aria-current="page" @endif>@include('partials.icon', ['name' => $label]){{ $label }}</a>
             @endforeach
