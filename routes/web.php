@@ -102,9 +102,9 @@ Route::middleware('auth')->group(function (): void {
 
     Route::patch('/agenda/{tarea}/cancelar', [TareaController::class, 'cancelar'])
         ->name('agenda.cancelar');
-    
+
     Route::delete('/agenda/{tarea}', [TareaController::class, 'destroy'])
-    ->name('agenda.destroy');
+        ->name('agenda.destroy');
 
     // Fincas
     Route::resource('fincas', FincaController::class)
@@ -152,4 +152,11 @@ Route::middleware('auth')->group(function (): void {
         [IAProduccionWebController::class, 'index']
     )->name('ia.index');
 
+    Route::get('/descargar-app', function () {
+        return view('descargar-app', [
+            'apkDisponible' => is_file(
+                public_path('descargas/GanTek.apk')
+            ),
+        ]);
+    })->name('descargar.app');
 });
