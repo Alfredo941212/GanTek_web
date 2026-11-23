@@ -51,4 +51,12 @@ return [
         'binary' => env('PYTHON_BINARY', 'python'),
     ],
 
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
+
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+    ],
+
 ];
