@@ -19,7 +19,10 @@ use App\Http\Controllers\Api\VacunaController;
 use App\Http\Controllers\Api\VeterinarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\AiChatController;
+use App\Http\Controllers\Api\ReporteProduccionPdfController;
+use App\Http\Controllers\Api\ReporteProduccionExcelController;
 /*
 |--------------------------------------------------------------------------
 | Catálogos geográficos
@@ -154,6 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
         [AnalisisProduccionGrupoController::class, 'analizar']
     );
 
+    Route::post('/ia/chat', AiChatController::class);
     /*
     |--------------------------------------------------------------------------
     | Grupos de ordeño
@@ -207,5 +211,22 @@ Route::middleware('auth:sanctum')->group(function () {
         'sesiones-ordenio/importar',
         [SesionOrdenioController::class, 'importar']
     );
-});
 
+    /**EDITAR PERFIL */
+    Route::get('/perfil', [ProfileController::class, 'show']);
+    Route::patch('/perfil', [ProfileController::class, 'update']);
+
+    /**REPORTE PDF */
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get(
+            '/reportes/produccion/pdf',
+            ReporteProduccionPdfController::class
+        );
+    });
+
+    /**REPORTE EXCEL */
+    Route::get(
+        '/reportes/produccion/excel',
+        ReporteProduccionExcelController::class
+    );
+});
