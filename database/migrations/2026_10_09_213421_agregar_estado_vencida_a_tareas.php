@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -7,6 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // SQLite no admite MODIFY ni ENUM.
+        // En las pruebas, la columna existente se mantiene.
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("
             ALTER TABLE tareas
             MODIFY estado ENUM(
@@ -25,6 +32,10 @@ return new class extends Migration
             ->update([
                 'estado' => 'pendiente',
             ]);
+
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
 
         DB::statement("
             ALTER TABLE tareas
