@@ -9,6 +9,7 @@ use App\Models\RegistroOrdenio;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Str;
 
 class ApiRegistroOrdenioTest extends TestCase
 {
@@ -75,15 +76,20 @@ class ApiRegistroOrdenioTest extends TestCase
             ]);
     }
 
+
     public function test_user_can_register_milking_for_own_active_female(): void
     {
         $user = User::factory()->create();
+
         [$lote, $animal] = $this->crearAnimal($user);
 
         $token = $user->createToken('gantek-mobile')->plainTextToken;
 
+        $uuid = (string) Str::uuid();
+
         $this->withToken($token)
             ->postJson('/api/ordenios', [
+                'uuid' => $uuid,
                 'ganado_id' => $animal->id,
                 'fecha' => today()->toDateString(),
                 'turno' => null,
@@ -91,17 +97,20 @@ class ApiRegistroOrdenioTest extends TestCase
                 'observaciones' => 'Registro desde API.',
             ])
             ->assertCreated()
+            ->assertJsonPath('data.uuid', $uuid)
             ->assertJsonPath('data.ganado_id', $animal->id)
             ->assertJsonPath('data.lote_historico_id', $lote->id)
             ->assertJsonPath('data.numero_ordenio', 1)
             ->assertJsonPath('data.litros', '4.75');
 
         $this->assertDatabaseHas('registros_ordenio', [
+            'uuid' => $uuid,
             'ganado_id' => $animal->id,
             'lote_historico_id' => $lote->id,
             'numero_ordenio' => 1,
         ]);
     }
+
 
     public function test_duplicate_milking_number_for_same_animal_and_date_is_rejected(): void
     {

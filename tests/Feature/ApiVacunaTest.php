@@ -11,6 +11,23 @@ class ApiVacunaTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function tokenFor(User $user): string
+    {
+        return $user->createToken('gantek-mobile')->plainTextToken;
+    }
+
+    private function vacunaPayload(array $changes = []): array
+    {
+        return array_merge([
+            'nombre' => 'Vacuna GanTek API',
+            'fabricante' => 'Laboratorio GanTek',
+            'descripcion' => 'Vacuna creada mediante API.',
+            'dosis_recomendada' => '2 ml',
+            'intervalo_dias' => 180,
+            'estado' => 'Activo',
+        ], $changes);
+    }
+
     public function test_authenticated_user_can_list_vaccines(): void
     {
         $user = User::factory()->create();
@@ -20,9 +37,7 @@ class ApiVacunaTest extends TestCase
             'estado' => 'Activo',
         ]);
 
-        $token = $user->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
+        $this->withToken($this->tokenFor($user))
             ->getJson('/api/vacunas')
             ->assertOk()
             ->assertJsonFragment([
@@ -39,35 +54,28 @@ class ApiVacunaTest extends TestCase
             'nombre' => 'Vacuna Individual',
         ]);
 
-        $token = $user->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
+        $this->withToken($this->tokenFor($user))
             ->getJson("/api/vacunas/{$vacuna->id}")
             ->assertOk()
             ->assertJsonPath('data.id', $vacuna->id);
     }
 
-    public function test_normal_user_cannot_create_vaccine(): void
+    public function test_normal_user_can_create_vaccine(): void
     {
         $user = User::factory()->create([
             'puede_gestionar_catalogos' => false,
         ]);
 
-        $token = $user->createToken('gantek-mobile')->plainTextToken;
+        $this->withToken($this->tokenFor($user))
+            ->postJson('/api/vacunas', $this->vacunaPayload([
+                'nombre' => 'Vacuna Usuario Normal',
+            ]))
+            ->assertCreated()
+            ->assertJsonPath('data.nombre', 'Vacuna Usuario Normal');
 
-        $this->withToken($token)
-            ->postJson('/api/vacunas', [
-                'nombre' => 'Vacuna Sin Permiso',
-                'fabricante' => 'Laboratorio API',
-                'descripcion' => 'Prueba de seguridad.',
-                'dosis_recomendada' => '2 ml',
-                'intervalo_dias' => 180,
-                'estado' => 'Activo',
-            ])
-            ->assertForbidden();
-
-        $this->assertDatabaseMissing('vacunas', [
-            'nombre' => 'Vacuna Sin Permiso',
+        $this->assertDatabaseHas('vacunas', [
+            'nombre' => 'Vacuna Usuario Normal',
+            'estado' => 'Activo',
         ]);
     }
 
@@ -77,17 +85,8 @@ class ApiVacunaTest extends TestCase
             'puede_gestionar_catalogos' => true,
         ]);
 
-        $token = $admin->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
-            ->postJson('/api/vacunas', [
-                'nombre' => 'Vacuna GanTek API',
-                'fabricante' => 'Laboratorio GanTek',
-                'descripcion' => 'Vacuna creada mediante API.',
-                'dosis_recomendada' => '2 ml',
-                'intervalo_dias' => 180,
-                'estado' => 'Activo',
-            ])
+        $this->withToken($this->tokenFor($admin))
+            ->postJson('/api/vacunas', $this->vacunaPayload())
             ->assertCreated()
             ->assertJsonPath('data.nombre', 'Vacuna GanTek API')
             ->assertJsonPath('data.intervalo_dias', 180);
@@ -98,26 +97,34 @@ class ApiVacunaTest extends TestCase
         ]);
     }
 
-    public function test_normal_user_cannot_update_vaccine(): void
+    public function test_normal_user_can_update_vaccine(): void
     {
         $user = User::factory()->create([
             'puede_gestionar_catalogos' => false,
         ]);
 
-        $vacuna = Vacuna::factory()->create();
+        $vacuna = Vacuna::factory()->create([
+            'nombre' => 'Vacuna Original',
+            'estado' => 'Activo',
+        ]);
 
-        $token = $user->createToken('gantek-mobile')->plainTextToken;
+        $this->withToken($this->tokenFor($user))
+            ->putJson(
+                "/api/vacunas/{$vacuna->id}",
+                $this->vacunaPayload([
+                    'nombre' => 'Vacuna Editada por Usuario',
+                ])
+            )
+            ->assertOk()
+            ->assertJsonPath(
+                'data.nombre',
+                'Vacuna Editada por Usuario'
+            );
 
-        $this->withToken($token)
-            ->putJson("/api/vacunas/{$vacuna->id}", [
-                'nombre' => 'Intento de modificación',
-                'fabricante' => $vacuna->fabricante,
-                'descripcion' => $vacuna->descripcion,
-                'dosis_recomendada' => $vacuna->dosis_recomendada,
-                'intervalo_dias' => $vacuna->intervalo_dias,
-                'estado' => 'Activo',
-            ])
-            ->assertForbidden();
+        $this->assertDatabaseHas('vacunas', [
+            'id' => $vacuna->id,
+            'nombre' => 'Vacuna Editada por Usuario',
+        ]);
     }
 
     public function test_catalog_manager_can_update_vaccine(): void
@@ -131,17 +138,17 @@ class ApiVacunaTest extends TestCase
             'estado' => 'Activo',
         ]);
 
-        $token = $admin->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
-            ->putJson("/api/vacunas/{$vacuna->id}", [
-                'nombre' => 'Vacuna Actualizada',
-                'fabricante' => 'Nuevo Laboratorio',
-                'descripcion' => 'Información actualizada.',
-                'dosis_recomendada' => '3 ml',
-                'intervalo_dias' => 365,
-                'estado' => 'Activo',
-            ])
+        $this->withToken($this->tokenFor($admin))
+            ->putJson(
+                "/api/vacunas/{$vacuna->id}",
+                $this->vacunaPayload([
+                    'nombre' => 'Vacuna Actualizada',
+                    'fabricante' => 'Nuevo Laboratorio',
+                    'descripcion' => 'Informacion actualizada.',
+                    'dosis_recomendada' => '3 ml',
+                    'intervalo_dias' => 365,
+                ])
+            )
             ->assertOk()
             ->assertJsonPath('data.nombre', 'Vacuna Actualizada')
             ->assertJsonPath('data.intervalo_dias', 365);
@@ -153,7 +160,7 @@ class ApiVacunaTest extends TestCase
         ]);
     }
 
-    public function test_normal_user_cannot_deactivate_vaccine(): void
+    public function test_normal_user_can_deactivate_vaccine(): void
     {
         $user = User::factory()->create([
             'puede_gestionar_catalogos' => false,
@@ -163,15 +170,14 @@ class ApiVacunaTest extends TestCase
             'estado' => 'Activo',
         ]);
 
-        $token = $user->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
+        $this->withToken($this->tokenFor($user))
             ->deleteJson("/api/vacunas/{$vacuna->id}")
-            ->assertForbidden();
+            ->assertOk()
+            ->assertJsonPath('data.estado', 'Inactivo');
 
         $this->assertDatabaseHas('vacunas', [
             'id' => $vacuna->id,
-            'estado' => 'Activo',
+            'estado' => 'Inactivo',
         ]);
     }
 
@@ -185,9 +191,7 @@ class ApiVacunaTest extends TestCase
             'estado' => 'Activo',
         ]);
 
-        $token = $admin->createToken('gantek-mobile')->plainTextToken;
-
-        $this->withToken($token)
+        $this->withToken($this->tokenFor($admin))
             ->deleteJson("/api/vacunas/{$vacuna->id}")
             ->assertOk()
             ->assertJsonPath('data.estado', 'Inactivo');
@@ -201,6 +205,21 @@ class ApiVacunaTest extends TestCase
     public function test_guest_cannot_access_vaccines_api(): void
     {
         $this->getJson('/api/vacunas')
+            ->assertUnauthorized();
+
+        $this->postJson(
+            '/api/vacunas',
+            $this->vacunaPayload()
+        )->assertUnauthorized();
+
+        $vacuna = Vacuna::factory()->create();
+
+        $this->putJson(
+            "/api/vacunas/{$vacuna->id}",
+            $this->vacunaPayload()
+        )->assertUnauthorized();
+
+        $this->deleteJson("/api/vacunas/{$vacuna->id}")
             ->assertUnauthorized();
     }
 }
