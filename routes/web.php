@@ -50,6 +50,10 @@ Route::middleware('guest')->group(function (): void {
     Route::get('/auth/facebook/callback', [SocialController::class, 'handleFacebookCallback'])
         ->name('auth.facebook.callback');
 
+    // Ruta alternativa para el retorno de Google en HostGator.
+    Route::get('/google/retorno', [SocialController::class, 'handleGoogleCallback'])
+        ->name('auth.google.retorno');
+
     // Recuperación de contraseña
     Route::get('/olvide-contrasena', [AuthController::class, 'showForgotPassword'])
         ->name('password.request');
